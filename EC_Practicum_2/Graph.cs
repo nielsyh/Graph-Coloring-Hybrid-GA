@@ -12,14 +12,14 @@ namespace EC_Practicum_2
         {
             public int node;
             public List<int> edges;
+            //more stuff??
         };
 
-        //todo read size
-        //const int graphSize = 451;
         public Vertex[] graph;
 
         public Graph(string fileName, int graphSize)
         {
+            //todo: readsize
             graph = new Vertex[graphSize];
             string[] lines = System.IO.File.ReadAllLines(fileName);
 
@@ -35,16 +35,39 @@ namespace EC_Practicum_2
             {
                 if (line[0] == 'e') {
                     string[] split = line.Split(' ');
-                    int v1 = Int32.Parse(split[1]);
-                    int v2 = Int32.Parse(split[2]);
-
-                    graph[v1].edges.Add(v2);
-                    graph[v2].edges.Add(v1);
-
+                    connectNodes(Int32.Parse(split[1]), Int32.Parse(split[2]));
                     }
                 }
             Console.WriteLine("Init graph done..");
 
+        }
+
+
+        public List<int> getEdges(int node) {
+            return graph[node].edges;
+        }
+
+        public void connectNodes(int a, int b) {
+            if (!graph[a].edges.Contains(b)) {
+                graph[a].edges.Add(b);
+            }
+
+            if (!graph[b].edges.Contains(a))
+            {
+                graph[b].edges.Add(a);
+            }
+        }
+
+        public void disconnectNodes(int a, int b) {
+            if (graph[a].edges.Contains(b))
+            {
+                graph[a].edges.Remove(b);
+            }
+
+            if (graph[b].edges.Contains(a))
+            {
+                graph[b].edges.Remove(a);
+            }
         }
     }
 }
