@@ -15,12 +15,12 @@ namespace EC_Practicum_2
         };
 
         //todo read size
-        const int graphSize = 451;
-        string file_path;
-        Vertex[] graph = new Vertex[graphSize];
+        //const int graphSize = 451;
+        public Vertex[] graph;
 
-        public Graph(string fileName)
+        public Graph(string fileName, int graphSize)
         {
+            graph = new Vertex[graphSize];
             string[] lines = System.IO.File.ReadAllLines(fileName);
 
             for(int i = 0; i < graphSize; i++)
