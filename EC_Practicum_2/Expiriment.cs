@@ -15,21 +15,19 @@ namespace EC_Practicum_2
 
         Graph[] startPopulation;
 
-        public Expiriment(int k, string graphInputPath, int populationSize, int crossoverFunction, string name) {
+        public Expiriment(int k, string graphInputPath, int populationSize, string name) {
             this.k = k;
             this.graphInputPath = graphInputPath;
             this.populationSize = populationSize;
-            this.crossOverFunction = crossoverFunction;
 
             //generate start pop.
             startPopulation = new Graph[populationSize];
             for (int i = 0; i < this.populationSize; i++) {
                 Graph tmp = new Graph(graphInputPath, 450, k);
                 startPopulation[i] = tmp;
+                Console.WriteLine("conflicts: " + tmp.getConflicts());
             }
-
             Console.WriteLine("Init of " + name + " done..");
-
         }
 
         public void shufflePopulation() { }

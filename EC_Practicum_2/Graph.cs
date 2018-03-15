@@ -16,11 +16,16 @@ namespace EC_Practicum_2
             //more stuff??
         };
 
+
+        Random rnd = new Random();
+
         public Vertex[] graph;
+        int graphSize;
 
         public Graph(string fileName, int graphSize, int k)
         {
             //todo: readsize
+            this.graphSize = graphSize;
             graph = new Vertex[graphSize];
             string[] lines = System.IO.File.ReadAllLines(fileName);
 
@@ -31,7 +36,6 @@ namespace EC_Practicum_2
                 v.edges = new List<int>();
 
                 //random color?
-                Random rnd = new Random();
                 v.color = rnd.Next(1, k);
                 graph[i] = v;
             }
@@ -74,9 +78,26 @@ namespace EC_Practicum_2
         }
 
 
-        public int fitnessEval() {
+        public int getConflicts() {
+            bool[] checkedNodes = new bool[this.graphSize];
+            int conflicts = 0;
 
-            return 0;
+            for (int i = 0; i < this.graphSize; i++) {
+                int currentColor = this.graph[i].color;
+
+                List<int> currentEdges = this.getEdges(i);
+                foreach (int neighbor in currentEdges) {
+                    if (checkedNodes[neighbor]) continue;
+
+                    if (graph[neighbor].color == currentColor) {
+                        conflicts++;
+                    }
+                }
+                checkedNodes[i] = true;
+
+            }
+
+            return conflicts;
         }
     }
 }
