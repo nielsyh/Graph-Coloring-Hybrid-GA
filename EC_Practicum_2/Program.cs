@@ -10,7 +10,7 @@ namespace EC_Practicum_2
     {
         static void Main(string[] args)
         {
-            Graph a = new Graph("le450_15c.txt", 451);
+            Graph a = new Graph("le450_15c.txt", 450);
             Console.In.ReadLine();
         }
     }

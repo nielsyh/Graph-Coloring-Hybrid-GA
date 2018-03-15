@@ -35,11 +35,10 @@ namespace EC_Practicum_2
             {
                 if (line[0] == 'e') {
                     string[] split = line.Split(' ');
-                    connectNodes(Int32.Parse(split[1]), Int32.Parse(split[2]));
+                    connectNodes((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1));
                     }
                 }
             Console.WriteLine("Init graph done..");
-
         }
 
 
