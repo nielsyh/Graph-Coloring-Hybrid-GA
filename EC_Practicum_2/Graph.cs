@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+
 
 namespace EC_Practicum_2
 {
     public class Graph : List<Graph.Vertex>, ICloneable
     {
+        [Serializable]
         public class Vertex
         {
             public int Node { get; set; }
             public List<int> Edges { get; set; }
             public int Color { get; set; }
+
         };
 
+        private int _colorsCount;
         private Random random = new Random();
+        private List<Tuple<int, int>> _connections;
 
         public Graph(List<Tuple<int, int>> connections, int graphSize, int colorsCount)
         {
+            _colorsCount = colorsCount;
             for (int i = 0; i < graphSize; i++)
             {
 
@@ -34,6 +41,7 @@ namespace EC_Practicum_2
             for (int i = 0; i < connections.Count; i++)
                 ConnectNodes(connections[i].Item1, connections[i].Item2);
 
+            _connections = connections;
         }
 
 
@@ -58,6 +66,38 @@ namespace EC_Practicum_2
 
             if (this[b].Edges.Contains(a))
                 this[b].Edges.Remove(a);
+        }
+
+
+
+        public List<Vertex> getGreatestColorCluster()
+        {
+            int[] colorCnt = new int[_colorsCount + 1];
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                colorCnt[this[i].Color]++;
+            }
+
+            int gcnt = colorCnt.Max();
+            int gc = colorCnt.ToList().IndexOf(gcnt);
+
+            List<Vertex> biggestCluster = new List<Vertex>();
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].Color == gc)
+                {
+                    biggestCluster.Add(this[i]);
+                }
+            }
+
+            return biggestCluster;
+        }
+
+        public void removeVertex(Vertex r)
+        {
+            this.Remove(r);
         }
 
 
@@ -97,7 +137,14 @@ namespace EC_Practicum_2
 
         public object Clone()
         {
-            throw new NotImplementedException();
+            var g = new Graph(_connections, Count, _colorsCount);
+
+            for (int i = 0; i < g.Count; i++)
+            {
+                g[i].Color = this[i].Color;
+            }
+
+            return g;
         }
     }
 }

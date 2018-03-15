@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace EC_Practicum_2
 {
@@ -12,34 +13,37 @@ namespace EC_Practicum_2
     {
         Random rnd = new Random();
         public int ColorsCount { get; set; }
+        public int GraphSize { get; set; }
         public int PopulationSize { get; set; }
-        public int CrossOverFunction { get; set; }
         private Random _random = new Random();
         public Graph[] CurrentPopulation { get; set; }
 
+        private List<Tuple<int, int>> _connections;
+
         public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
         {
-            ColorsCount = k;
-            PopulationSize = populationSize;
+            this.ColorsCount = k;
+            this.PopulationSize = populationSize;
+            this.GraphSize = graphSize;
 
             CurrentPopulation = new Graph[populationSize];
 
             var lines = File.ReadAllLines(graphInputPath);
 
-            var connections = new List<Tuple<int, int>>();
+            _connections = new List<Tuple<int, int>>();
 
             foreach (string line in lines)
             {
                 if (line[0] == 'e')
                 {
                     var split = line.Split(' ');
-                    connections.Add(new Tuple<int, int>((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1)));
+                    _connections.Add(new Tuple<int, int>((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1)));
                 }
             }
 
             for (int i = 0; i < PopulationSize; i++)
             {
-                var tmp = new Graph(connections, graphSize, k);
+                var tmp = new Graph(_connections, graphSize, k);
                 CurrentPopulation[i] = tmp;
                 Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
@@ -82,24 +86,44 @@ namespace EC_Practicum_2
             return newPopulation;
         }
 
-        public void Run()
+        public Graph CrossoverGPX(Graph p1, Graph p2)
         {
-            while (true)
-            {
-                VDSL(CurrentPopulation[0]);
-            }
-            VDSL(CurrentPopulation[0]);
-            //shuffle
-            //generate new population
-            //for every pair do
-            // Crossover function
-            // Local Search (to improve)
-            // Family selection
-            // Add fittest to new population
+            var _p1 = p1.Clone() as Graph;
+            var _p2 = p2.Clone() as Graph;
 
-            //check if valid solution found, if so decline k, if not continue..
+            var child = new Graph(_connections, GraphSize, ColorsCount);
+
+            var currentParent = _p1;
+
+            while (currentParent.Count > 0)
+            {
+                //get greatest cluster from parent
+                List<Graph.Vertex> greatestCluster = currentParent.getGreatestColorCluster();
+                var colorOfCluster = greatestCluster[0].Color;
+
+                foreach (Graph.Vertex vertex in greatestCluster)
+                {
+                    child[vertex.Node].Color = colorOfCluster;
+                    p1.removeVertex(vertex);
+                    p2.removeVertex(vertex);
+                }
+
+                if (currentParent == _p1) currentParent = _p2;
+                else currentParent = _p1;
+            }
+            return child;
         }
 
+
+        public void Run()
+        {
+            VDSL(CurrentPopulation[0]);
+
+            var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
+            Console.WriteLine("debug");
+        }
+
+        //check if valid solution found, if so decline k, if not continue..
         /// <summary>
         /// Vertex descent local search
         /// </summary>
@@ -141,7 +165,9 @@ namespace EC_Practicum_2
                         bestColor = i;
                     }
                     else
+                    {
                         g.Color(node, bestColor);
+                    }
                 }
                 //Console.WriteLine();
 
@@ -185,5 +211,17 @@ namespace EC_Practicum_2
 
             return data;
         }
+
+        //public static T DeepClone<T>(T obj)
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        var formatter = new BinaryFormatter();
+        //        formatter.Serialize(ms, obj);
+        //        ms.Position = 0;
+
+        //        return (T)formatter.Deserialize(ms);
+        //    }
+        //}
     }
 }
