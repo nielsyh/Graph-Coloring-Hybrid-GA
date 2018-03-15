@@ -80,6 +80,12 @@ namespace EC_Practicum_2
             return newPopulation;
         }
 
+        public Graph CrossoverGPX(Graph p1, Graph p2) {
+            //get biggest cluster from p1
+
+        }
+
+
         public void Run()
         {
             //shuffle

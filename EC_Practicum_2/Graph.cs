@@ -15,12 +15,15 @@ namespace EC_Practicum_2
             public int Node { get; set; }
             public List<int> Edges { get; set; }
             public int Color { get; set; }
+            
         };
 
+        private int _k;
         private Random random = new Random();
 
         public Graph(List<Tuple<int,int>> connections, int graphSize, int k)
         {
+            this._k = k;
             for (int i = 0; i < graphSize; i++)
             {
 
@@ -64,6 +67,30 @@ namespace EC_Practicum_2
             if (this[b].Edges.Contains(a))
                 this[b].Edges.Remove(a);
         }
+
+        public List<Vertex> getGreatestColorCluster() {
+            int[] colorCnt = new int[_k];
+
+            for (int i = 0; i < this.Count; i++) {
+                colorCnt[this[i].Color]++;
+            }
+
+            int gcnt = colorCnt.Max(); 
+            int gc = colorCnt.ToList().IndexOf(gcnt);
+
+            List<Vertex> biggestCluster = new List<Vertex>();
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].Color == gc) {
+                    biggestCluster.Add(this[i]);
+                }
+            }
+
+            return biggestCluster;
+        }
+
+        public void removeNode()
 
 
         public int GetConflicts()
