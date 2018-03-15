@@ -10,18 +10,19 @@ namespace EC_Practicum_2
 {
     class Experiment
     {
+        Random rnd = new Random();
         public int ColorsCount { get; set; }
         public int PopulationSize { get; set; }
         public int CrossOverFunction { get; set; }
-        public Graph[] StartPopulation { get; set; }
         private Random _random = new Random();
+        public Graph[] CurrentPopulation { get; set; }
 
         public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
         {
             ColorsCount = k;
             PopulationSize = populationSize;
 
-            StartPopulation = new Graph[populationSize];
+            CurrentPopulation = new Graph[populationSize];
 
             var lines = File.ReadAllLines(graphInputPath);
 
@@ -39,18 +40,51 @@ namespace EC_Practicum_2
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(connections, graphSize, k);
-                StartPopulation[i] = tmp;
+                CurrentPopulation[i] = tmp;
                 Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
 
             Console.WriteLine("Init of " + name + " done..");
         }
 
-        public void ShufflePopulation() { }
+        public void ShufflePopulation() {
+            // Knuth shuffle algorithm :: courtesy of Wikipedia :)
+            for (int t = 0; t < CurrentPopulation.Length; t++)
+            {
+                var tmp = CurrentPopulation[t];
+                int r = rnd.Next(t, CurrentPopulation.Length);
+                CurrentPopulation[t] = CurrentPopulation[r];
+                CurrentPopulation[r] = tmp;
+            }
+        }
+
+        //TODO: 
+        public Graph[] GetNewGeneration() {
+            Graph[] newPopulation = new Graph[PopulationSize];
+
+            //shuffle current population
+            ShufflePopulation();
+            for(int i = 0; i < PopulationSize; i += 2)
+            {
+                var p1 = CurrentPopulation[i];
+                var p2 = CurrentPopulation[i+1];
+
+                //todo: GEN CHIDREN WITH CROSSOVER
+                //improve WITH LOCAL SEARCH
+
+                var c1 = p1;
+                var c2 = p2;
+
+
+
+            }
+
+            return newPopulation;
+        }
 
         public void Run()
         {
-            VDSL(StartPopulation[0]);
+            VDSL(CurrentPopulation[0]);
             //shuffle
             //generate new population
             //for every pair do
@@ -95,7 +129,7 @@ namespace EC_Practicum_2
                     g.Color(node, i);
                     var newConflicts = g.GetConflicts();
 
-                    //Console.Write(newConflicts + "|");
+                    Console.Write(newConflicts + "|");
 
                     if (newConflicts < minimalConflicts)
                     {
