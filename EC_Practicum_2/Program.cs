@@ -10,7 +10,9 @@ namespace EC_Practicum_2
     {
         static void Main(string[] args)
         {
-            Graph a = new Graph("le450_15c.txt", 450);
+            Expiriment a = new Expiriment(18, "le450_15c.txt", 10, 0, "Expiriment 1");
+
+
             Console.In.ReadLine();
         }
     }

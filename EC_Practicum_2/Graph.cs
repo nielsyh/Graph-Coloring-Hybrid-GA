@@ -12,12 +12,13 @@ namespace EC_Practicum_2
         {
             public int node;
             public List<int> edges;
+            public int color;
             //more stuff??
         };
 
         public Vertex[] graph;
 
-        public Graph(string fileName, int graphSize)
+        public Graph(string fileName, int graphSize, int k)
         {
             //todo: readsize
             graph = new Vertex[graphSize];
@@ -28,6 +29,10 @@ namespace EC_Practicum_2
                 Vertex v = new Vertex();
                 v.node = i;
                 v.edges = new List<int>();
+
+                //random color?
+                Random rnd = new Random();
+                v.color = rnd.Next(1, k);
                 graph[i] = v;
             }
 
@@ -38,7 +43,6 @@ namespace EC_Practicum_2
                     connectNodes((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1));
                     }
                 }
-            Console.WriteLine("Init graph done..");
         }
 
 
@@ -67,6 +71,12 @@ namespace EC_Practicum_2
             {
                 graph[b].edges.Remove(a);
             }
+        }
+
+
+        public int fitnessEval() {
+
+            return 0;
         }
     }
 }
