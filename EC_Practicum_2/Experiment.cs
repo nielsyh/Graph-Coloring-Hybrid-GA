@@ -63,10 +63,9 @@ namespace EC_Practicum_2
             }
         }
 
-        //TODO: 
-        public Graph[] GetNewGeneration()
+        public IEnumerable<Graph> GetNewGeneration()
         {
-            var newPopulation = new Graph[PopulationSize];
+            var newPopulation = new List<Graph>();
 
             //shuffle current population
             ShufflePopulation();
@@ -76,13 +75,19 @@ namespace EC_Practicum_2
                 var p1 = CurrentPopulation[i];
                 var p2 = CurrentPopulation[i + 1];
 
+                Console.WriteLine(p1.GetConflicts());
+                Console.WriteLine(p2.GetConflicts());
 
                 //TODO local search on them
+
                 var c1 = CrossoverGPX(p1, p2);
                 var c2 = CrossoverGPX(p1, p2);
+
+                VDSL(c1);
+                VDSL(c2);
+
+                newPopulation.AddRange(new[] { c1, c2 });
             }
-
-
 
             return newPopulation;
         }
@@ -97,7 +102,7 @@ namespace EC_Practicum_2
             var currentParent = _p1;
 
             //while (currentParent.Count > 0)
-            for(int i = 1; i < ColorsCount + 1; i++)
+            for (int i = 1; i < ColorsCount + 1; i++)
             {
                 //get greatest cluster from parent
                 List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
@@ -119,9 +124,13 @@ namespace EC_Practicum_2
 
         public void Run()
         {
+            for(int i = 0;i < 50; i++)
+            {
+                CurrentPopulation = GetNewGeneration().ToArray();
+            }
             //VDSL(CurrentPopulation[0]);
 
-           // var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
+            // var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
         }
 
         //check if valid solution found, if so decline k, if not continue..
@@ -157,7 +166,6 @@ namespace EC_Practicum_2
 
                     g.Color(node, i);
                     var newConflicts = g.GetConflicts();
-
 
                     if (newConflicts < minimalConflicts)
                     {

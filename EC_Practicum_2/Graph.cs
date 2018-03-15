@@ -132,9 +132,7 @@ namespace EC_Practicum_2
             var g = new Graph(_connections, Count, _colorsCount);
 
             for (var i = 0; i < g.Count; i++)
-            {
                 g[i].Color = this[i].Color;
-            }
 
             return g;
         }
