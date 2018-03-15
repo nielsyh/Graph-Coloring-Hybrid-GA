@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace EC_Practicum_2
 {
-    class Graph : List<Graph.Vertex>
+    public class Graph : List<Graph.Vertex>, ICloneable
     {
         public class Vertex
         {
@@ -93,6 +93,11 @@ namespace EC_Practicum_2
         public List<int> GetConfiguration()
         {
             return this.Select(v => v.Color).ToList();
+        }
+
+        public object Clone()
+        {
+            throw new NotImplementedException();
         }
     }
 }

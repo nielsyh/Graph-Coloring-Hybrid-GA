@@ -47,7 +47,8 @@ namespace EC_Practicum_2
             Console.WriteLine("Init of " + name + " done..");
         }
 
-        public void ShufflePopulation() {
+        public void ShufflePopulation()
+        {
             // Knuth shuffle algorithm :: courtesy of Wikipedia :)
             for (int t = 0; t < CurrentPopulation.Length; t++)
             {
@@ -59,24 +60,23 @@ namespace EC_Practicum_2
         }
 
         //TODO: 
-        public Graph[] GetNewGeneration() {
-            Graph[] newPopulation = new Graph[PopulationSize];
+        public Graph[] GetNewGeneration()
+        {
+            var newPopulation = new Graph[PopulationSize];
 
             //shuffle current population
             ShufflePopulation();
-            for(int i = 0; i < PopulationSize; i += 2)
+
+            for (int i = 0; i < PopulationSize; i += 2)
             {
                 var p1 = CurrentPopulation[i];
-                var p2 = CurrentPopulation[i+1];
+                var p2 = CurrentPopulation[i + 1];
 
                 //todo: GEN CHIDREN WITH CROSSOVER
                 //improve WITH LOCAL SEARCH
 
                 var c1 = p1;
                 var c2 = p2;
-
-
-
             }
 
             return newPopulation;
@@ -84,6 +84,10 @@ namespace EC_Practicum_2
 
         public void Run()
         {
+            while (true)
+            {
+                VDSL(CurrentPopulation[0]);
+            }
             VDSL(CurrentPopulation[0]);
             //shuffle
             //generate new population
@@ -96,7 +100,6 @@ namespace EC_Practicum_2
             //check if valid solution found, if so decline k, if not continue..
         }
 
-
         /// <summary>
         /// Vertex descent local search
         /// </summary>
@@ -104,7 +107,7 @@ namespace EC_Practicum_2
         public IEnumerable<int> VDSL(Graph g)
         {
             //Iterate in random order 
-            var order = GenerateRandomOrder(g);
+            var order = GenerateRandomOrder(g).ToList();
 
             //Console.WriteLine(order.Select(x => x.ToString()).Aggregate((x, y) => x.ToString() + " " + y.ToString()));
             var initialConflicts = g.GetConflicts();
@@ -115,8 +118,9 @@ namespace EC_Practicum_2
 
             Console.WriteLine("Before local search: " + initialConflicts);
 
-            foreach (var node in g)
+            for (int vert = 0; vert < g.Count; vert++)
             {
+                var node = g[order[vert]];
                 var minimalConflicts = bestConflictsMinimizer;
 
                 int bestColor = node.Color;
@@ -129,7 +133,7 @@ namespace EC_Practicum_2
                     g.Color(node, i);
                     var newConflicts = g.GetConflicts();
 
-                    Console.Write(newConflicts + "|");
+                    //Console.Write(newConflicts + "|");
 
                     if (newConflicts < minimalConflicts)
                     {
@@ -139,14 +143,13 @@ namespace EC_Practicum_2
                     else
                         g.Color(node, bestColor);
                 }
-                Console.WriteLine();
+                //Console.WriteLine();
 
                 if (minimalConflicts < bestConflictsMinimizer)
                 {
                     bestConflictsMinimizer = minimalConflicts;
                     bestConflictConfiguration = g.GetConfiguration();
                 }
-
             }
 
             if (bestConflictsMinimizer > initialConflicts)
@@ -167,7 +170,7 @@ namespace EC_Practicum_2
             var ba = new BitArray(g.Count);
             var data = new int[g.Count];
 
-            for (int i = 0; i < g.Count; i++)
+            for (var i = 0; i < g.Count; i++)
             {
                 //Random next is exclusive of the upper bound
                 var n = _random.Next(1, g.Count + 1);
