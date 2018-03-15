@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EC_Practicum_2
 {
     class Graph : List<Graph.Vertex>
     {
-        public struct Vertex
+        public class Vertex
         {
             public int Node { get; set; }
             public List<int> Edges { get; set; }
@@ -21,9 +18,9 @@ namespace EC_Practicum_2
         private int _k;
         private Random random = new Random();
 
-        public Graph(List<Tuple<int,int>> connections, int graphSize, int k)
+        public Graph(List<Tuple<int, int>> connections, int graphSize, int colorsCount)
         {
-            this._k = k;
+            this._k = colorsCount;
             for (int i = 0; i < graphSize; i++)
             {
 
@@ -31,16 +28,14 @@ namespace EC_Practicum_2
                 {
                     Node = i,
                     Edges = new List<int>(),
-                    Color = random.Next(1, k)
+                    Color = random.Next(1, colorsCount + 1)
                 };
 
                 Add(v);
             }
 
-            for(int i = 0;i < connections.Count; i++)
-            {
+            for (int i = 0; i < connections.Count; i++)
                 ConnectNodes(connections[i].Item1, connections[i].Item2);
-            }
 
         }
 
@@ -90,7 +85,7 @@ namespace EC_Practicum_2
             return biggestCluster;
         }
 
-        public void removeNode()
+        public void removeNode() { }
 
 
         public int GetConflicts()
@@ -115,6 +110,16 @@ namespace EC_Practicum_2
                 ba[i] = true;
             }
             return conflicts;
+        }
+
+        public void Color(Vertex node, int i)
+        {
+            node.Color = i;
+        }
+
+        public List<int> GetConfiguration()
+        {
+            return this.Select(v => v.Color).ToList();
         }
     }
 }
