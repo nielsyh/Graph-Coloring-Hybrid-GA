@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace EC_Practicum_2
         public int PopulationSize { get; set; }
         public int CrossOverFunction { get; set; }
         public Graph[] StartPopulation { get; set; }
+        private Random _random = new Random();
 
-        public Experiment(int k, string graphInputPath, int populationSize, string name)
+        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
         {
             ColorsCount = k;
             PopulationSize = populationSize;
@@ -36,7 +38,7 @@ namespace EC_Practicum_2
 
             for (int i = 0; i < PopulationSize; i++)
             {
-                var tmp = new Graph(connections, 450, k);
+                var tmp = new Graph(connections, graphSize, k);
                 StartPopulation[i] = tmp;
                 Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
@@ -48,6 +50,7 @@ namespace EC_Practicum_2
 
         public void Run()
         {
+            VDSL(StartPopulation[0]);
             //shuffle
             //generate new population
             //for every pair do
@@ -59,17 +62,91 @@ namespace EC_Practicum_2
             //check if valid solution found, if so decline k, if not continue..
         }
 
-        public async void VDSL(Graph g)
-        {
-            await Task.Run(() =>
-             {
 
-             });
+        /// <summary>
+        /// Vertex descent local search
+        /// </summary>
+        /// <param name="g">The graph on which to perform the search</param>
+        public IEnumerable<int> VDSL(Graph g)
+        {
+            //Iterate in random order 
+            var order = GenerateRandomOrder(g);
+
+            //Console.WriteLine(order.Select(x => x.ToString()).Aggregate((x, y) => x.ToString() + " " + y.ToString()));
+            var initialConflicts = g.GetConflicts();
+            var initialConfiguration = g.GetConfiguration();
+
+            var bestConflictsMinimizer = initialConflicts;
+            var bestConflictConfiguration = initialConfiguration.Select(c => c).ToList();
+
+            Console.WriteLine("Before local search: " + initialConflicts);
+
+            foreach (var node in g)
+            {
+                var minimalConflicts = bestConflictsMinimizer;
+
+                int bestColor = node.Color;
+                int originalColor = bestColor;
+
+                for (var i = 1; i <= ColorsCount; i++)
+                {
+                    if (i == originalColor) continue;
+
+                    g.Color(node, i);
+                    var newConflicts = g.GetConflicts();
+
+                    //Console.Write(newConflicts + "|");
+
+                    if (newConflicts < minimalConflicts)
+                    {
+                        minimalConflicts = newConflicts;
+                        bestColor = i;
+                    }
+                    else
+                        g.Color(node, bestColor);
+                }
+                Console.WriteLine();
+
+                if (minimalConflicts < bestConflictsMinimizer)
+                {
+                    bestConflictsMinimizer = minimalConflicts;
+                    bestConflictConfiguration = g.GetConfiguration();
+                }
+
+            }
+
+            if (bestConflictsMinimizer > initialConflicts)
+                bestConflictConfiguration = initialConfiguration;
+
+            Console.WriteLine("After local search " + bestConflictsMinimizer);
+            return bestConflictConfiguration;
         }
 
-        public int conflicts() => 0;
+        /// <summary>
+        /// Maps every index to a random index(could be optimized cause of the while cycle can, in theory, run indefinitely)
+        /// Altho, in practice this works very fast
+        /// </summary>
+        /// <param name="g"></param>
+        /// <returns></returns>
+        private IEnumerable<int> GenerateRandomOrder(Graph g)
+        {
+            var ba = new BitArray(g.Count);
+            var data = new int[g.Count];
+
+            for (int i = 0; i < g.Count; i++)
+            {
+                //Random next is exclusive of the upper bound
+                var n = _random.Next(1, g.Count + 1);
+
+                while (ba[n - 1])
+                    n = _random.Next(1, g.Count + 1);
+
+                ba[n - 1] = true;
+
+                data[i] = n - 1;
+            }
+
+            return data;
+        }
     }
-
-
-
 }

@@ -11,7 +11,8 @@ namespace EC_Practicum_2
         static void Main(string[] args)
         {
             var a = new Experiment(18, "../../le450_15c.txt", 10, "Expiriment 1");
-            Console.In.ReadLine();
+            a.Run();
+            Console.ReadLine();
         }
     }
 }
