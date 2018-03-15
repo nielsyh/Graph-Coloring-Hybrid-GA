@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ namespace EC_Practicum_2
     class Experiment
     {
         public int ColorsCount { get; set; }
-        public string GraphInputPath { get; set; }
         public int PopulationSize { get; set; }
         public int CrossOverFunction { get; set; }
         public Graph[] StartPopulation { get; set; }
@@ -17,14 +17,26 @@ namespace EC_Practicum_2
         public Experiment(int k, string graphInputPath, int populationSize, string name)
         {
             ColorsCount = k;
-            GraphInputPath = graphInputPath;
             PopulationSize = populationSize;
 
-            //generate start pop.
             StartPopulation = new Graph[populationSize];
+
+            var lines = File.ReadAllLines(graphInputPath);
+
+            var connections = new List<Tuple<int, int>>();
+
+            foreach (string line in lines)
+            {
+                if (line[0] == 'e')
+                {
+                    var split = line.Split(' ');
+                    connections.Add(new Tuple<int, int>((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1)));
+                }
+            }
+
             for (int i = 0; i < PopulationSize; i++)
             {
-                var tmp = new Graph(graphInputPath, 450, k);
+                var tmp = new Graph(connections, 450, k);
                 StartPopulation[i] = tmp;
                 Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }

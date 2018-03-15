@@ -15,18 +15,12 @@ namespace EC_Practicum_2
             public int Node { get; set; }
             public List<int> Edges { get; set; }
             public int Color { get; set; }
-            //more stuff??
         };
 
         private Random random = new Random();
 
-        public Vertex[] graph;
-        int graphSize;
-
-        public Graph(string fileName, int graphSize, int k)
+        public Graph(List<Tuple<int,int>> connections, int graphSize, int k)
         {
-            var lines = File.ReadAllLines(fileName);
-
             for (int i = 0; i < graphSize; i++)
             {
 
@@ -40,56 +34,54 @@ namespace EC_Practicum_2
                 Add(v);
             }
 
-            foreach (string line in lines)
+            for(int i = 0;i < connections.Count; i++)
             {
-                if (line[0] == 'e')
-                {
-                    string[] split = line.Split(' ');
-                    ConnectNodes((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1));
-                }
+                ConnectNodes(connections[i].Item1, connections[i].Item2);
             }
+
         }
 
 
         public List<int> GetEdges(int node)
         {
-            return graph[node].Edges;
+            return this[node].Edges;
         }
 
         public void ConnectNodes(int a, int b)
         {
-            if (!graph[a].Edges.Contains(b))
-                graph[a].Edges.Add(b);
+            if (!this[a].Edges.Contains(b))
+                this[a].Edges.Add(b);
 
-            if (!graph[b].Edges.Contains(a))
-                graph[b].Edges.Add(a);
+            if (!this[b].Edges.Contains(a))
+                this[b].Edges.Add(a);
         }
 
         public void DisconnectNodes(int a, int b)
         {
-            if (graph[a].Edges.Contains(b))
-                graph[a].Edges.Remove(b);
+            if (this[a].Edges.Contains(b))
+                this[a].Edges.Remove(b);
 
-            if (graph[b].Edges.Contains(a))
-                graph[b].Edges.Remove(a);
+            if (this[b].Edges.Contains(a))
+                this[b].Edges.Remove(a);
         }
 
 
         public int GetConflicts()
         {
-            var ba = new BitArray(graphSize);
+            var size = Count;
+            var ba = new BitArray(size);
             var conflicts = 0;
 
-            for (var i = 0; i < graphSize; i++)
+            for (var i = 0; i < size; i++)
             {
-                var currentColor = graph[i].Color;
+                var currentColor = this[i].Color;
                 var currentEdges = GetEdges(i);
 
                 foreach (int neighbor in currentEdges)
                 {
                     if (ba[neighbor]) continue;
 
-                    if (graph[neighbor].Color == currentColor)
+                    if (this[neighbor].Color == currentColor)
                         conflicts++;
                 }
 
