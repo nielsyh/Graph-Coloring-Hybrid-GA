@@ -104,8 +104,8 @@ namespace EC_Practicum_2
                 foreach (Graph.Vertex vertex in greatestCluster)
                 {
                     child[vertex.Node].Color = colorOfCluster;
-                    p1.removeVertex(vertex);
-                    p2.removeVertex(vertex);
+                    p1.Remove(vertex);
+                    p2.Remove(vertex);
                 }
 
                 if (currentParent == _p1) currentParent = _p2;
