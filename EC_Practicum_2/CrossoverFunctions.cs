@@ -9,7 +9,8 @@ namespace EC_Practicum_2
     class CrossoverFunctions
     {
 
-        public CrossoverFunctions() {
+        public CrossoverFunctions()
+        {
             //TODO: implement
         }
 
@@ -19,7 +20,7 @@ namespace EC_Practicum_2
             //TODO: implement
         }
 
-        
+
         public void VertexDescentLocalSearch()
         {
             //TODO: implement

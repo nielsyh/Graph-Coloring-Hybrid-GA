@@ -15,7 +15,8 @@ namespace EC_Practicum_2
 
         Graph[] startPopulation;
 
-        public Expiriment(int k, string graphInputPath, int populationSize, int crossoverFunction, string name) {
+        public Expiriment(int k, string graphInputPath, int populationSize, int crossoverFunction, string name)
+        {
             this.k = k;
             this.graphInputPath = graphInputPath;
             this.populationSize = populationSize;
@@ -23,34 +24,45 @@ namespace EC_Practicum_2
 
             //generate start pop.
             startPopulation = new Graph[populationSize];
-            for (int i = 0; i < this.populationSize; i++) {
+            for (int i = 0; i < this.populationSize; i++)
+            {
                 Graph tmp = new Graph(graphInputPath, 450, k);
                 startPopulation[i] = tmp;
             }
-
             Console.WriteLine("Init of " + name + " done..");
-
         }
 
         public void shufflePopulation() { }
 
-        public void run() {
+        public void run()
+        {
             //shuffle
-
             //generate new population
             //for every pair do
-                // Crossover function
-                // Local Search (to improve)
-                // Family selection
-                // Add fittest to new population
+            // Crossover function
+            // Local Search (to improve)
+            // Family selection
+            // Add fittest to new population
 
             //check if valid solution found, if so decline k, if not continue..
-
-
-
         }
-    }
+
+        public async void VDSL(Graph g)
+        {
+            await Task.Run(() =>
+             {
+                 for (int i = 0; i < g.Length; i++)
+                     for (int j = 0; j < g.Length; j++)
+                     {
+
+                     }
+
+             });
+        }
+
+    public int conflicts() => 0;
+}
 
 
-    
+
 }

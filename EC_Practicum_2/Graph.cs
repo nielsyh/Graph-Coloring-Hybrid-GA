@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace EC_Practicum_2
 {
-    class Graph
+    class Graph : List<Graph.Vertex>
     {
         public struct Vertex
         {
@@ -16,42 +17,46 @@ namespace EC_Practicum_2
             //more stuff??
         };
 
-        public Vertex[] graph;
+        private Random random = new Random();
 
         public Graph(string fileName, int graphSize, int k)
         {
             //todo: readsize
-            graph = new Vertex[graphSize];
-            string[] lines = System.IO.File.ReadAllLines(fileName);
+            var lines = File.ReadAllLines(fileName);
 
-            for(int i = 0; i < graphSize; i++)
+            for (int i = 0; i < graphSize; i++)
             {
-                Vertex v = new Vertex();
-                v.node = i;
-                v.edges = new List<int>();
+                var v = new Vertex
+                {
+                    node = i,
+                    edges = new List<int>(),
+                    //random color?
+                    color = random.Next(1, k)
+                };
 
-                //random color?
-                Random rnd = new Random();
-                v.color = rnd.Next(1, k);
-                graph[i] = v;
+                Add(v);
             }
 
             foreach (string line in lines)
             {
-                if (line[0] == 'e') {
+                if (line[0] == 'e')
+                {
                     string[] split = line.Split(' ');
-                    connectNodes((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1));
-                    }
+                    ConnectNodes((Int32.Parse(split[1]) - 1), (Int32.Parse(split[2]) - 1));
                 }
+            }
         }
 
 
-        public List<int> getEdges(int node) {
+        public List<int> GetEdges(int node)
+        {
             return graph[node].edges;
         }
 
-        public void connectNodes(int a, int b) {
-            if (!graph[a].edges.Contains(b)) {
+        public void ConnectNodes(int a, int b)
+        {
+            if (!graph[a].edges.Contains(b))
+            {
                 graph[a].edges.Add(b);
             }
 
@@ -61,7 +66,8 @@ namespace EC_Practicum_2
             }
         }
 
-        public void disconnectNodes(int a, int b) {
+        public void DisconnectNodes(int a, int b)
+        {
             if (graph[a].edges.Contains(b))
             {
                 graph[a].edges.Remove(b);
@@ -74,7 +80,8 @@ namespace EC_Practicum_2
         }
 
 
-        public int fitnessEval() {
+        public int FitnessEval()
+        {
 
             return 0;
         }
