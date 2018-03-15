@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+
 
 namespace EC_Practicum_2
 {
-    class Graph : List<Graph.Vertex>
+    [Serializable]
+    class Graph : List<Graph.Vertex> 
     {
+        [Serializable]
         public class Vertex
         {
             public int Node { get; set; }
@@ -63,8 +67,10 @@ namespace EC_Practicum_2
                 this[b].Edges.Remove(a);
         }
 
+
+
         public List<Vertex> getGreatestColorCluster() {
-            int[] colorCnt = new int[_k];
+            int[] colorCnt = new int[_k+1];
 
             for (int i = 0; i < this.Count; i++) {
                 colorCnt[this[i].Color]++;
@@ -85,7 +91,9 @@ namespace EC_Practicum_2
             return biggestCluster;
         }
 
-        public void removeNode() { }
+        public void removeVertex(Vertex r) {
+            this.Remove(r);
+        }
 
 
         public int GetConflicts()
