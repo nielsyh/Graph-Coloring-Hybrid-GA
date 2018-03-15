@@ -98,7 +98,7 @@ namespace EC_Practicum_2
             while (currentParent.Count > 0)
             {
                 //get greatest cluster from parent
-                List<Graph.Vertex> greatestCluster = currentParent.getGreatestColorCluster();
+                List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
                 var colorOfCluster = greatestCluster[0].Color;
 
                 foreach (Graph.Vertex vertex in greatestCluster)

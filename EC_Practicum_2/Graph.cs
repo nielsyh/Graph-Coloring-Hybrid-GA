@@ -68,13 +68,11 @@ namespace EC_Practicum_2
                 this[b].Edges.Remove(a);
         }
 
-
-
-        public List<Vertex> getGreatestColorCluster()
+        public List<Vertex> GetGreatestColorCluster()
         {
-            int[] colorCnt = new int[_colorsCount + 1];
+            var colorCnt = new int[_colorsCount + 1];
 
-            for (int i = 0; i < this.Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 colorCnt[this[i].Color]++;
             }
@@ -82,7 +80,7 @@ namespace EC_Practicum_2
             int gcnt = colorCnt.Max();
             int gc = colorCnt.ToList().IndexOf(gcnt);
 
-            List<Vertex> biggestCluster = new List<Vertex>();
+            var biggestCluster = new List<Vertex>();
 
             for (int i = 0; i < this.Count; i++)
             {
@@ -94,12 +92,6 @@ namespace EC_Practicum_2
 
             return biggestCluster;
         }
-
-        public void removeVertex(Vertex r)
-        {
-            this.Remove(r);
-        }
-
 
         public int GetConflicts()
         {
@@ -139,7 +131,7 @@ namespace EC_Practicum_2
         {
             var g = new Graph(_connections, Count, _colorsCount);
 
-            for (int i = 0; i < g.Count; i++)
+            for (var i = 0; i < g.Count; i++)
             {
                 g[i].Color = this[i].Color;
             }
