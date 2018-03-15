@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EC_Practicum_2
+{
+    class Experiment
+    {
+        public int ColorsCount { get; set; }
+        public string GraphInputPath { get; set; }
+        public int PopulationSize { get; set; }
+        public int CrossOverFunction { get; set; }
+        public Graph[] StartPopulation { get; set; }
+
+        public Experiment(int k, string graphInputPath, int populationSize, string name)
+        {
+            ColorsCount = k;
+            GraphInputPath = graphInputPath;
+            PopulationSize = populationSize;
+
+            //generate start pop.
+            StartPopulation = new Graph[populationSize];
+            for (int i = 0; i < PopulationSize; i++)
+            {
+                var tmp = new Graph(graphInputPath, 450, k);
+                StartPopulation[i] = tmp;
+                Console.WriteLine("conflicts: " + tmp.GetConflicts());
+            }
+
+            Console.WriteLine("Init of " + name + " done..");
+        }
+
+        public void ShufflePopulation() { }
+
+        public void Run()
+        {
+            //shuffle
+            //generate new population
+            //for every pair do
+            // Crossover function
+            // Local Search (to improve)
+            // Family selection
+            // Add fittest to new population
+
+            //check if valid solution found, if so decline k, if not continue..
+        }
+
+        public async void VDSL(Graph g)
+        {
+            await Task.Run(() =>
+             {
+
+             });
+        }
+
+        public int conflicts() => 0;
+    }
+
+
+
+}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,27 +12,29 @@ namespace EC_Practicum_2
     {
         public struct Vertex
         {
-            public int node;
-            public List<int> edges;
-            public int color;
+            public int Node { get; set; }
+            public List<int> Edges { get; set; }
+            public int Color { get; set; }
             //more stuff??
         };
 
         private Random random = new Random();
 
+        public Vertex[] graph;
+        int graphSize;
+
         public Graph(string fileName, int graphSize, int k)
         {
-            //todo: readsize
             var lines = File.ReadAllLines(fileName);
 
             for (int i = 0; i < graphSize; i++)
             {
+
                 var v = new Vertex
                 {
-                    node = i,
-                    edges = new List<int>(),
-                    //random color?
-                    color = random.Next(1, k)
+                    Node = i,
+                    Edges = new List<int>(),
+                    Color = random.Next(1, k)
                 };
 
                 Add(v);
@@ -50,40 +53,49 @@ namespace EC_Practicum_2
 
         public List<int> GetEdges(int node)
         {
-            return graph[node].edges;
+            return graph[node].Edges;
         }
 
         public void ConnectNodes(int a, int b)
         {
-            if (!graph[a].edges.Contains(b))
-            {
-                graph[a].edges.Add(b);
-            }
+            if (!graph[a].Edges.Contains(b))
+                graph[a].Edges.Add(b);
 
-            if (!graph[b].edges.Contains(a))
-            {
-                graph[b].edges.Add(a);
-            }
+            if (!graph[b].Edges.Contains(a))
+                graph[b].Edges.Add(a);
         }
 
         public void DisconnectNodes(int a, int b)
         {
-            if (graph[a].edges.Contains(b))
-            {
-                graph[a].edges.Remove(b);
-            }
+            if (graph[a].Edges.Contains(b))
+                graph[a].Edges.Remove(b);
 
-            if (graph[b].edges.Contains(a))
-            {
-                graph[b].edges.Remove(a);
-            }
+            if (graph[b].Edges.Contains(a))
+                graph[b].Edges.Remove(a);
         }
 
 
-        public int FitnessEval()
+        public int GetConflicts()
         {
+            var ba = new BitArray(graphSize);
+            var conflicts = 0;
 
-            return 0;
+            for (var i = 0; i < graphSize; i++)
+            {
+                var currentColor = graph[i].Color;
+                var currentEdges = GetEdges(i);
+
+                foreach (int neighbor in currentEdges)
+                {
+                    if (ba[neighbor]) continue;
+
+                    if (graph[neighbor].Color == currentColor)
+                        conflicts++;
+                }
+
+                ba[i] = true;
+            }
+            return conflicts;
         }
     }
 }
