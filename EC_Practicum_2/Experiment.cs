@@ -76,12 +76,13 @@ namespace EC_Practicum_2
                 var p1 = CurrentPopulation[i];
                 var p2 = CurrentPopulation[i + 1];
 
-                //todo: GEN CHIDREN WITH CROSSOVER
-                //improve WITH LOCAL SEARCH
 
-                var c1 = p1;
-                var c2 = p2;
+                //TODO local search on them
+                var c1 = CrossoverGPX(p1, p2);
+                var c2 = CrossoverGPX(p1, p2);
             }
+
+
 
             return newPopulation;
         }
@@ -95,17 +96,18 @@ namespace EC_Practicum_2
 
             var currentParent = _p1;
 
-            while (currentParent.Count > 0)
+            //while (currentParent.Count > 0)
+            for(int i = 1; i < ColorsCount + 1; i++)
             {
                 //get greatest cluster from parent
                 List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
-                var colorOfCluster = greatestCluster[0].Color;
+                //var colorOfCluster = greatestCluster[0].Color;
 
                 foreach (Graph.Vertex vertex in greatestCluster)
                 {
-                    child[vertex.Node].Color = colorOfCluster;
-                    p1.Remove(vertex);
-                    p2.Remove(vertex);
+                    child[vertex.Node].Color = i;
+                    _p1.Remove(vertex);
+                    _p2.Remove(vertex);
                 }
 
                 if (currentParent == _p1) currentParent = _p2;
@@ -117,10 +119,9 @@ namespace EC_Practicum_2
 
         public void Run()
         {
-            VDSL(CurrentPopulation[0]);
+            //VDSL(CurrentPopulation[0]);
 
-            var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
-            Console.WriteLine("debug");
+           // var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
         }
 
         //check if valid solution found, if so decline k, if not continue..
@@ -157,7 +158,6 @@ namespace EC_Practicum_2
                     g.Color(node, i);
                     var newConflicts = g.GetConflicts();
 
-                    //Console.Write(newConflicts + "|");
 
                     if (newConflicts < minimalConflicts)
                     {
@@ -169,7 +169,6 @@ namespace EC_Practicum_2
                         g.Color(node, bestColor);
                     }
                 }
-                //Console.WriteLine();
 
                 if (minimalConflicts < bestConflictsMinimizer)
                 {
@@ -208,20 +207,7 @@ namespace EC_Practicum_2
 
                 data[i] = n - 1;
             }
-
             return data;
         }
-
-        //public static T DeepClone<T>(T obj)
-        //{
-        //    using (var ms = new MemoryStream())
-        //    {
-        //        var formatter = new BinaryFormatter();
-        //        formatter.Serialize(ms, obj);
-        //        ms.Position = 0;
-
-        //        return (T)formatter.Deserialize(ms);
-        //    }
-        //}
     }
 }
