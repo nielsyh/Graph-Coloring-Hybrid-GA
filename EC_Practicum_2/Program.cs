@@ -10,7 +10,7 @@ namespace EC_Practicum_2
     {
         static void Main(string[] args)
         {
-            var a = new Experiment(18, "../../le450_15c.txt", 10, "Expiriment 1");
+            var a = new Experiment(18, "../../le450_15c.txt", 100, "Expiriment 1");
             a.Run();
             Console.ReadLine();
         }

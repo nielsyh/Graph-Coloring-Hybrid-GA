@@ -17,6 +17,7 @@ namespace EC_Practicum_2
         public int PopulationSize { get; set; }
         private Random _random = new Random();
         public Graph[] CurrentPopulation { get; set; }
+        public int BestFitness = int.MaxValue;
 
         private List<Tuple<int, int>> _connections;
 
@@ -43,6 +44,7 @@ namespace EC_Practicum_2
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
+                VDSL(tmp);
                 CurrentPopulation[i] = tmp;
                 Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
@@ -112,7 +114,7 @@ namespace EC_Practicum_2
                 }
 
                 //Console.WriteLine("winners: " + winners[0].GetConflicts() + " , " + winners[1].GetConflicts());
-                
+                if (winners[0].GetConflicts() < BestFitness) BestFitness = winners[0].GetConflicts();
                 newPopulation.AddRange(new[] { winners[0], winners[1]});
             }
 
@@ -154,8 +156,12 @@ namespace EC_Practicum_2
             //while until no improvement
             //implement selection
             //
-            Console.WriteLine('0');
-            CurrentPopulation = GetNewGeneration().ToArray();
+            while (true) {
+                CurrentPopulation = GetNewGeneration().ToArray();
+                Console.WriteLine("avg: " + getAverageFitness());
+                Console.WriteLine("best: " + BestFitness);
+            }
+            
 
 
         }
@@ -167,44 +173,33 @@ namespace EC_Practicum_2
         /// <param name="g">The graph on which to perform the search</param>
         public IEnumerable<int> VDSL(Graph g)
         {
-            //Iterate in random order 
-            var order = GenerateRandomOrder(g).ToList();
-
-            var initialConflicts = g.GetConflicts();
-            var initialConfiguration = g.GetConfiguration();
-
-            var bestConflictsMinimizer = initialConflicts;
-            var bestConflictConfiguration = initialConfiguration.Select(c => c).ToList();
-
-            Console.WriteLine("Before local search: " + initialConflicts);
-
-            for (var vert = 0; vert < g.Count; vert++)
+            //Iterate in random order WHY? TODO: answer this <-
+            //GenerateRandomOrder(g).ToList();
+            //Console.WriteLine("before local search " + g.GetConflicts());
+            //O(n) local search, set the color of each v to the least frequent color of its neigbors
+            for (int v = 0; v < g.Count; v++)
             {
-                var bestConflicts = g.GetConflicts();
-                var configuration = g.GetConfiguration();
-
-                for (int i = 1; i <= ColorsCount; i++)
+                int[] clrcnt = new int[g.ColorCtn+1];
+                clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+                foreach(int neighbor in g[v].Edges)
                 {
-                    g.Color(g[vert], i);
-                    var r = g.GetConflicts();
-
-                    if (r < bestConflicts)
-                    {
-                        bestConflicts = r;
-                        configuration = g.GetConfiguration();
-                    }
+                    var clr = g[neighbor].Color;
+                    clrcnt[clr]++;
                 }
+                g.Color(g[v], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+            }
+            //Console.WriteLine("after local search " + g.GetConflicts());
+            return g.GetConfiguration();
+        }
 
-                if(bestConflicts < bestConflictsMinimizer)
-                {
-                    bestConflictsMinimizer = bestConflicts;
-                    bestConflictConfiguration = configuration;
-                }
+        public int getAverageFitness() {
+            double total = 0;
+
+            for (int i = 0; i < PopulationSize; i++) {
+                total = total + CurrentPopulation[i].GetConflicts();
             }
 
-            Console.WriteLine("After local search " + bestConflictsMinimizer);
-
-            return bestConflictConfiguration;
+            return (int)(total / PopulationSize);
         }
 
         /// <summary>

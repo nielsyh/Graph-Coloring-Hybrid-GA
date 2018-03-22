@@ -18,13 +18,13 @@ namespace EC_Practicum_2
 
         };
 
-        private int _colorsCount;
+        public int ColorCtn;
         private Random random = new Random();
         private List<Tuple<int, int>> _connections;
 
         public Graph(List<Tuple<int, int>> connections, int graphSize, int colorsCount)
         {
-            _colorsCount = colorsCount;
+            ColorCtn = colorsCount;
             for (int i = 0; i < graphSize; i++)
             {
 
@@ -70,7 +70,7 @@ namespace EC_Practicum_2
 
         public List<Vertex> GetGreatestColorCluster()
         {
-            var colorCnt = new int[_colorsCount + 1];
+            var colorCnt = new int[ColorCtn + 1];
 
             for (int i = 0; i < Count; i++)
             {
@@ -129,7 +129,7 @@ namespace EC_Practicum_2
 
         public object Clone()
         {
-            var g = new Graph(_connections, Count, _colorsCount);
+            var g = new Graph(_connections, Count, ColorCtn);
 
             for (var i = 0; i < g.Count; i++)
                 g[i].Color = this[i].Color;
