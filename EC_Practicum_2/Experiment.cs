@@ -115,7 +115,7 @@ namespace EC_Practicum_2
 
                 //Console.WriteLine("winners: " + winners[0].GetConflicts() + " , " + winners[1].GetConflicts());
                 if (winners[0].GetConflicts() < BestFitness) BestFitness = winners[0].GetConflicts();
-                newPopulation.AddRange(new[] { winners[0], winners[1]});
+                newPopulation.AddRange(new[] { winners[0], winners[1] });
             }
 
             return newPopulation;
@@ -129,23 +129,30 @@ namespace EC_Practicum_2
             var child = new Graph(_connections, GraphSize, ColorsCount);
 
             var currentParent = _p1;
-
-            //while (currentParent.Count > 0)
-            for (int i = 1; i < ColorsCount + 1; i++)
+            int i = 1;
+            
+            while (currentParent.Count > 0)
+            //for (int i = 1; i < ColorsCount + 1; i++)
             {
                 //get greatest cluster from parent
                 List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
-                //var colorOfCluster = greatestCluster[0].Color;
+
+                var crntClr = i;
+                if (i > ColorsCount)
+                {
+                    crntClr = _random.Next(1, ColorsCount + 1);
+                }
 
                 foreach (Graph.Vertex vertex in greatestCluster)
                 {
-                    child[vertex.Node].Color = i;
+                    child[vertex.Node].Color = crntClr;
                     _p1.Remove(vertex);
                     _p2.Remove(vertex);
                 }
 
                 if (currentParent == _p1) currentParent = _p2;
                 else currentParent = _p1;
+                i++;
             }
             return child;
         }
@@ -161,9 +168,6 @@ namespace EC_Practicum_2
                 Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
-            
-
-
         }
 
         //check if valid solution found, if so decline k, if not continue..
@@ -173,20 +177,24 @@ namespace EC_Practicum_2
         /// <param name="g">The graph on which to perform the search</param>
         public IEnumerable<int> VDSL(Graph g)
         {
-            //Iterate in random order WHY? TODO: answer this <-
-            //GenerateRandomOrder(g).ToList();
-            //Console.WriteLine("before local search " + g.GetConflicts());
-            //O(n) local search, set the color of each v to the least frequent color of its neigbors
-            for (int v = 0; v < g.Count; v++)
-            {
-                int[] clrcnt = new int[g.ColorCtn+1];
-                clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
-                foreach(int neighbor in g[v].Edges)
+            int noImprovement = 0;
+            while(noImprovement < 100) { 
+                //Iterate in random order WHY? TODO: answer this <-
+                GenerateRandomOrder(g).ToList();
+                var oldFitness = g.GetConflicts();
+                //O(n) local search, set the color of each v to the least frequent color of its neigbors
+                for (int v = 0; v < g.Count; v++)
                 {
-                    var clr = g[neighbor].Color;
-                    clrcnt[clr]++;
+                    int[] clrcnt = new int[g.ColorCtn + 1];
+                    clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+                    foreach (int neighbor in g[v].Edges)
+                    {
+                        var clr = g[neighbor].Color;
+                        clrcnt[clr]++;
+                    }
+                    g.Color(g[v], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
                 }
-                g.Color(g[v], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+                if (oldFitness <= g.GetConflicts()) noImprovement++;
             }
             //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
