@@ -74,7 +74,7 @@ namespace EC_Practicum_2
             for (int i = 0; i < PopulationSize; i += 2)
             {
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
-                var p2 = Tuple.Create(CurrentPopulation[i+1], CurrentPopulation[i+1].GetConflicts());
+                var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
 
                 var t1 = CrossoverGPX(p1.Item1, p2.Item1);
@@ -87,7 +87,7 @@ namespace EC_Practicum_2
                 var c2 = Tuple.Create(t2, t2.GetConflicts());
 
                 //sort parents
-                List<Tuple<Graph,int>> parents = new List<Tuple<Graph, int>>();
+                List<Tuple<Graph, int>> parents = new List<Tuple<Graph, int>>();
                 parents.Add(p1);
                 parents.Add(p2);
                 parents.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
@@ -100,7 +100,8 @@ namespace EC_Practicum_2
 
                 //get best 2, return those
                 Graph[] winners = new Graph[2];
-                for (int j = 0; j < 2; j++) {
+                for (int j = 0; j < 2; j++)
+                {
                     if (children[0].Item2 > parents[0].Item2)
                     {
                         winners[j] = parents[0].Item1;
@@ -130,7 +131,7 @@ namespace EC_Practicum_2
 
             var currentParent = _p1;
             int i = 1;
-            
+
             while (currentParent.Count > 0)
             //for (int i = 1; i < ColorsCount + 1; i++)
             {
@@ -163,7 +164,8 @@ namespace EC_Practicum_2
             //while until no improvement
             //implement selection
             //
-            while (true) {
+            while (true)
+            {
                 CurrentPopulation = GetNewGeneration().ToArray();
                 Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
@@ -177,33 +179,43 @@ namespace EC_Practicum_2
         /// <param name="g">The graph on which to perform the search</param>
         public IEnumerable<int> VDSL(Graph g)
         {
-            int noImprovement = 0;
-            while(noImprovement < 100) { 
+            var noImprovement = 0;
+
+            while (noImprovement < 100)
+            {
+
                 //Iterate in random order WHY? TODO: answer this <-
-                GenerateRandomOrder(g).ToList();
+                var order = GenerateRandomOrder(g).ToList();
                 var oldFitness = g.GetConflicts();
+
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
-                for (int v = 0; v < g.Count; v++)
+                foreach(var vertex in order)
                 {
-                    int[] clrcnt = new int[g.ColorCtn + 1];
+                    var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
-                    foreach (int neighbor in g[v].Edges)
+
+                    foreach (int neighbor in g[vertex].Edges)
                     {
                         var clr = g[neighbor].Color;
                         clrcnt[clr]++;
                     }
-                    g.Color(g[v], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+
+                    g.Color(g[vertex], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
                 }
-                if (oldFitness <= g.GetConflicts()) noImprovement++;
+
+                if (oldFitness <= g.GetConflicts()) { noImprovement++; }
             }
+
             //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
         }
 
-        public int getAverageFitness() {
+        public int getAverageFitness()
+        {
             double total = 0;
 
-            for (int i = 0; i < PopulationSize; i++) {
+            for (int i = 0; i < PopulationSize; i++)
+            {
                 total = total + CurrentPopulation[i].GetConflicts();
             }
 
