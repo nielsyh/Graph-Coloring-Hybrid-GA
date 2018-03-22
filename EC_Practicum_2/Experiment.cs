@@ -71,21 +71,49 @@ namespace EC_Practicum_2
 
             for (int i = 0; i < PopulationSize; i += 2)
             {
-                var p1 = CurrentPopulation[i];
-                var p2 = CurrentPopulation[i + 1];
+                var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
+                var p2 = Tuple.Create(CurrentPopulation[i+1], CurrentPopulation[i+1].GetConflicts());
 
-                Console.WriteLine(p1.GetConflicts());
-                Console.WriteLine(p2.GetConflicts());
 
-                //TODO local search on them
+                var t1 = CrossoverGPX(p1.Item1, p2.Item1);
+                var t2 = CrossoverGPX(p1.Item1, p2.Item1);
 
-                var c1 = CrossoverGPX(p1, p2);
-                var c2 = CrossoverGPX(p1, p2);
+                VDSL(t1);
+                VDSL(t2);
 
-                VDSL(c1);
-                VDSL(c2);
+                var c1 = Tuple.Create(t1, t1.GetConflicts());
+                var c2 = Tuple.Create(t2, t2.GetConflicts());
 
-                newPopulation.AddRange(new[] { c1, c2 });
+                //sort parents
+                List<Tuple<Graph,int>> parents = new List<Tuple<Graph, int>>();
+                parents.Add(p1);
+                parents.Add(p2);
+                parents.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
+
+                //sort children
+                List<Tuple<Graph, int>> children = new List<Tuple<Graph, int>>();
+                children.Add(c1);
+                children.Add(c2);
+                children.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
+
+                //get best 2, return those
+                Graph[] winners = new Graph[2];
+                for (int j = 0; j < 2; j++) {
+                    if (children[0].Item2 > parents[0].Item2)
+                    {
+                        winners[j] = parents[0].Item1;
+                        parents.Remove(parents[0]);
+                    }
+                    else
+                    {
+                        winners[j] = children[0].Item1;
+                        children.Remove(children[0]);
+                    }
+                }
+
+                //Console.WriteLine("winners: " + winners[0].GetConflicts() + " , " + winners[1].GetConflicts());
+                
+                newPopulation.AddRange(new[] { winners[0], winners[1]});
             }
 
             return newPopulation;
@@ -126,6 +154,7 @@ namespace EC_Practicum_2
             //while until no improvement
             //implement selection
             //
+            Console.WriteLine('0');
             CurrentPopulation = GetNewGeneration().ToArray();
 
 
