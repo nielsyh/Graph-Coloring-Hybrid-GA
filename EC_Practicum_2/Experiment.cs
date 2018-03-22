@@ -25,7 +25,7 @@ namespace EC_Practicum_2
             this.ColorsCount = k;
             this.PopulationSize = populationSize;
             this.GraphSize = graphSize;
-     
+
             //Parse Graph text file
             _connections = new List<Tuple<int, int>>();
             var lines = File.ReadAllLines(graphInputPath);
@@ -127,7 +127,7 @@ namespace EC_Practicum_2
             //implement selection
             //
             CurrentPopulation = GetNewGeneration().ToArray();
-        
+
 
         }
 
@@ -141,7 +141,6 @@ namespace EC_Practicum_2
             //Iterate in random order 
             var order = GenerateRandomOrder(g).ToList();
 
-            //Console.WriteLine(order.Select(x => x.ToString()).Aggregate((x, y) => x.ToString() + " " + y.ToString()));
             var initialConflicts = g.GetConflicts();
             var initialConfiguration = g.GetConfiguration();
 
@@ -150,43 +149,32 @@ namespace EC_Practicum_2
 
             Console.WriteLine("Before local search: " + initialConflicts);
 
-            for (int vert = 0; vert < g.Count; vert++)
+            for (var vert = 0; vert < g.Count; vert++)
             {
-                var node = g[order[vert]];
-                var minimalConflicts = bestConflictsMinimizer;
+                var bestConflicts = g.GetConflicts();
+                var configuration = g.GetConfiguration();
 
-                int bestColor = node.Color;
-                int originalColor = bestColor;
-
-                for (var i = 1; i <= ColorsCount; i++)
+                for (int i = 1; i <= ColorsCount; i++)
                 {
-                    if (i == originalColor) continue;
+                    g.Color(g[vert], i);
+                    var r = g.GetConflicts();
 
-                    g.Color(node, i);
-                    var newConflicts = g.GetConflicts();
-
-                    if (newConflicts < minimalConflicts)
+                    if (r < bestConflicts)
                     {
-                        minimalConflicts = newConflicts;
-                        bestColor = i;
-                    }
-                    else
-                    {
-                        g.Color(node, bestColor);
+                        bestConflicts = r;
+                        configuration = g.GetConfiguration();
                     }
                 }
 
-                if (minimalConflicts < bestConflictsMinimizer)
+                if(bestConflicts < bestConflictsMinimizer)
                 {
-                    bestConflictsMinimizer = minimalConflicts;
-                    bestConflictConfiguration = g.GetConfiguration();
+                    bestConflictsMinimizer = bestConflicts;
+                    bestConflictConfiguration = configuration;
                 }
             }
 
-            if (bestConflictsMinimizer > initialConflicts)
-                bestConflictConfiguration = initialConfiguration;
-
             Console.WriteLine("After local search " + bestConflictsMinimizer);
+
             return bestConflictConfiguration;
         }
 
