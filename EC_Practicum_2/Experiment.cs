@@ -25,13 +25,10 @@ namespace EC_Practicum_2
             this.ColorsCount = k;
             this.PopulationSize = populationSize;
             this.GraphSize = graphSize;
-
-            CurrentPopulation = new Graph[populationSize];
-
-            var lines = File.ReadAllLines(graphInputPath);
-
+     
+            //Parse Graph text file
             _connections = new List<Tuple<int, int>>();
-
+            var lines = File.ReadAllLines(graphInputPath);
             foreach (string line in lines)
             {
                 if (line[0] == 'e')
@@ -41,6 +38,8 @@ namespace EC_Practicum_2
                 }
             }
 
+            //initialze all individuals of population.
+            CurrentPopulation = new Graph[populationSize];
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
@@ -124,13 +123,12 @@ namespace EC_Practicum_2
 
         public void Run()
         {
-            for(int i = 0;i < 50; i++)
-            {
-                CurrentPopulation = GetNewGeneration().ToArray();
-            }
-            //VDSL(CurrentPopulation[0]);
+            //while until no improvement
+            //implement selection
+            //
+            CurrentPopulation = GetNewGeneration().ToArray();
+        
 
-            // var c1 = CrossoverGPX(CurrentPopulation[0], CurrentPopulation[1]);
         }
 
         //check if valid solution found, if so decline k, if not continue..
