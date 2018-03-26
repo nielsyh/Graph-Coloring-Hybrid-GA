@@ -90,15 +90,19 @@ namespace EC_Practicum_2
                 var c2 = Tuple.Create(t2, t2.GetConflicts());
 
                 //sort parents
-                var parents = new List<Tuple<Graph, int>>();
-                parents.Add(p1);
-                parents.Add(p2);
+                var parents = new List<Tuple<Graph, int>>
+                {
+                    p1,
+                    p2
+                };
                 parents.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
 
                 //sort children
-                var children = new List<Tuple<Graph, int>>();
-                children.Add(c1);
-                children.Add(c2);
+                var children = new List<Tuple<Graph, int>>
+                {
+                    c1,
+                    c2
+                };
                 children.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
 
                 var winners = new Graph[2];
@@ -119,7 +123,8 @@ namespace EC_Practicum_2
                     }
                 }
 
-                if (winners[0].GetConflicts() < BestFitness) BestFitness = winners[0].GetConflicts();
+                var conflicts = winners[0].GetConflicts();
+                if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
 
 
@@ -145,9 +150,10 @@ namespace EC_Practicum_2
             while (currentParent.Count > 0)
             {
                 bool search = false;
-                if (rand.NextDouble() <= 0.9) search = true;
+                if (rand.NextDouble() <= 0.7) search = true;
                 //get greatest cluster from parent
                 List<Graph.Vertex> greatestCluster = new List<Graph.Vertex>();
+
                 if (search)
                     greatestCluster = currentParent.GetGreatestColorCluster();
                 else
@@ -181,18 +187,19 @@ namespace EC_Practicum_2
             {
                 CurrentPopulation = GetNewGeneration().ToArray();
                 GenerationCount++;
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Console.WriteLine("Solution found for " + ColorsCount);
+                Console.WriteLine("------------------------------------");
+                Console.WriteLine("cputime: " + elapsedMs);
+                Console.WriteLine("vdslcnt: " + VdslCount);
+                Console.WriteLine("gencnt:" + GenerationCount);
+                Console.WriteLine("------------------------------------");
                 Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
                 
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine("Solution found for " + ColorsCount);
-            Console.WriteLine("------------------------------------");
-            Console.WriteLine("cputime: " + elapsedMs);
-            Console.WriteLine("vdslcnt: " + VdslCount);
-            Console.WriteLine("gencnt:" + GenerationCount);
-            Console.WriteLine("------------------------------------");
+
         }
 
         //check if valid solution found, if so decline k, if not continue..

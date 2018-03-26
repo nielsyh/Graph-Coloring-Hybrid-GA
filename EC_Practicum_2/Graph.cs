@@ -80,7 +80,7 @@ namespace EC_Practicum_2
             for (int i = 0; i < Count; i++)
                 colorCnt[this[i].Color]++;
             int gcnt = 0;
-            if (subOpt)
+            if (!subOpt)
                 gcnt = colorCnt.Max();
             else
                 gcnt = colorCnt.GroupBy(x => x)
