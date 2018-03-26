@@ -19,6 +19,12 @@ namespace EC_Practicum_2
         public Graph[] CurrentPopulation { get; set; }
         public int BestFitness = int.MaxValue;
 
+
+        //Measurements
+        public double VdslCount         = 0;
+        public double GenerationCount  = 0;
+        public double CpuTime;
+
         private List<Tuple<int, int>> _connections;
 
         public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
@@ -46,7 +52,7 @@ namespace EC_Practicum_2
                 var tmp = new Graph(_connections, graphSize, k);
                 VDSL(tmp);
                 CurrentPopulation[i] = tmp;
-                Console.WriteLine("conflicts: " + tmp.GetConflicts());
+                //Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
 
             Console.WriteLine("Init of " + name + " done..");
@@ -164,12 +170,23 @@ namespace EC_Practicum_2
             //while until no improvement
             //implement selection
             //
-            while (true)
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            
+            while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration().ToArray();
+                GenerationCount++;
                 Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("Solution found for " + ColorsCount);
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("cputime: " + elapsedMs);
+            Console.WriteLine("vdslcnt: " + VdslCount);
+            Console.WriteLine("gencnt:" + GenerationCount);
+            Console.WriteLine("------------------------------------");
         }
 
         //check if valid solution found, if so decline k, if not continue..
@@ -204,6 +221,7 @@ namespace EC_Practicum_2
                 }
 
                 if (oldFitness <= g.GetConflicts()) { noImprovement++; }
+                VdslCount++;
             }
 
             //Console.WriteLine("after local search " + g.GetConflicts());
