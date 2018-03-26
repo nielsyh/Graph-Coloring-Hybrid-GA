@@ -20,15 +20,15 @@ namespace EC_Practicum_2
         public int BestFitness = int.MaxValue;
 
         //Measurements
-        public double VdslCount         = 0;
-        public double GenerationCount   = 0;
+        public double VdslCount = 0;
+        public double GenerationCount = 0;
         private List<Tuple<int, int>> _connections;
 
         public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
         {
-            this.ColorsCount = k;
-            this.PopulationSize = populationSize;
-            this.GraphSize = graphSize;
+            ColorsCount = k;
+            PopulationSize = populationSize;
+            GraphSize = graphSize;
 
             //Parse Graph text file
             _connections = new List<Tuple<int, int>>();
@@ -89,19 +89,19 @@ namespace EC_Practicum_2
                 var c2 = Tuple.Create(t2, t2.GetConflicts());
 
                 //sort parents
-                List<Tuple<Graph, int>> parents = new List<Tuple<Graph, int>>();
+                var parents = new List<Tuple<Graph, int>>();
                 parents.Add(p1);
                 parents.Add(p2);
                 parents.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
 
                 //sort children
-                List<Tuple<Graph, int>> children = new List<Tuple<Graph, int>>();
+                var children = new List<Tuple<Graph, int>>();
                 children.Add(c1);
                 children.Add(c2);
                 children.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
 
                 //get best 2, return those
-                Graph[] winners = new Graph[2];
+                var winners = new Graph[2];
                 for (int j = 0; j < 2; j++)
                 {
                     if (children[0].Item2 > parents[0].Item2)
@@ -128,14 +128,21 @@ namespace EC_Practicum_2
             var _p2 = p2.Clone() as Graph;
 
             var child = new Graph(_connections, GraphSize, ColorsCount);
+            var rand = new Random();
 
             var currentParent = _p1;
             int i = 1;
 
             while (currentParent.Count > 0)
             {
+                bool search = false;
+                if (rand.NextDouble() <= 0.9) search = true;
                 //get greatest cluster from parent
-                List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
+                List<Graph.Vertex> greatestCluster = new List<Graph.Vertex>();
+                if (search)
+                    greatestCluster = currentParent.GetGreatestColorCluster();
+                else
+                    greatestCluster = currentParent.GetGreatestColorCluster(true);
 
                 var crntClr = i;
                 if (i > ColorsCount)
@@ -160,7 +167,7 @@ namespace EC_Practicum_2
         public void Run()
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            
+
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration().ToArray();
@@ -195,7 +202,7 @@ namespace EC_Practicum_2
                 var oldFitness = g.GetConflicts();
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
-                foreach(var vertex in order)
+                foreach (var vertex in order)
                 {
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)

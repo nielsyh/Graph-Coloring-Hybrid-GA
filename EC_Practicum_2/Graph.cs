@@ -68,27 +68,35 @@ namespace EC_Practicum_2
                 this[b].Edges.Remove(a);
         }
 
-        public List<Vertex> GetGreatestColorCluster()
+        /// <summary>
+        /// Find the greatest possible cluster in a graph
+        /// </summary>
+        /// <param name="subOpt">Allow suboptimal moves</param>
+        /// <returns></returns>
+        public List<Vertex> GetGreatestColorCluster(bool subOpt = false)
         {
             var colorCnt = new int[ColorCtn + 1];
 
             for (int i = 0; i < Count; i++)
-            {
                 colorCnt[this[i].Color]++;
-            }
+            int gcnt = 0;
+            if (subOpt)
+                gcnt = colorCnt.Max();
+            else
+                gcnt = colorCnt.GroupBy(x => x)
+                               .OrderBy(t => t.Key)
+                               .Skip(1)
+                               .Take(1)
+                               .FirstOrDefault()
+                               .Key;
 
-            int gcnt = colorCnt.Max();
             int gc = colorCnt.ToList().IndexOf(gcnt);
 
             var biggestCluster = new List<Vertex>();
 
-            for (int i = 0; i < this.Count; i++)
-            {
+            for (int i = 0; i < Count; i++)
                 if (this[i].Color == gc)
-                {
                     biggestCluster.Add(this[i]);
-                }
-            }
 
             return biggestCluster;
         }
