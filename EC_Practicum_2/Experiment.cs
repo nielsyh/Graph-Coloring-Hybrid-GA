@@ -19,12 +19,9 @@ namespace EC_Practicum_2
         public Graph[] CurrentPopulation { get; set; }
         public int BestFitness = int.MaxValue;
 
-
         //Measurements
         public double VdslCount         = 0;
-        public double GenerationCount  = 0;
-        public double CpuTime;
-
+        public double GenerationCount   = 0;
         private List<Tuple<int, int>> _connections;
 
         public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
@@ -82,7 +79,6 @@ namespace EC_Practicum_2
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
-
                 var t1 = CrossoverGPX(p1.Item1, p2.Item1);
                 var t2 = CrossoverGPX(p1.Item1, p2.Item1);
 
@@ -120,11 +116,9 @@ namespace EC_Practicum_2
                     }
                 }
 
-                //Console.WriteLine("winners: " + winners[0].GetConflicts() + " , " + winners[1].GetConflicts());
                 if (winners[0].GetConflicts() < BestFitness) BestFitness = winners[0].GetConflicts();
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
             }
-
             return newPopulation;
         }
 
@@ -139,7 +133,6 @@ namespace EC_Practicum_2
             int i = 1;
 
             while (currentParent.Count > 0)
-            //for (int i = 1; i < ColorsCount + 1; i++)
             {
                 //get greatest cluster from parent
                 List<Graph.Vertex> greatestCluster = currentParent.GetGreatestColorCluster();
@@ -164,12 +157,8 @@ namespace EC_Practicum_2
             return child;
         }
 
-
         public void Run()
         {
-            //while until no improvement
-            //implement selection
-            //
             var watch = System.Diagnostics.Stopwatch.StartNew();
             
             while (BestFitness != 0)
@@ -231,12 +220,10 @@ namespace EC_Practicum_2
         public int getAverageFitness()
         {
             double total = 0;
-
             for (int i = 0; i < PopulationSize; i++)
             {
                 total = total + CurrentPopulation[i].GetConflicts();
             }
-
             return (int)(total / PopulationSize);
         }
 
@@ -260,7 +247,6 @@ namespace EC_Practicum_2
                     n = _random.Next(1, g.Count + 1);
 
                 ba[n - 1] = true;
-
                 data[i] = n - 1;
             }
             return data;
