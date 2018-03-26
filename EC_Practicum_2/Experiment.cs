@@ -24,7 +24,7 @@ namespace EC_Practicum_2
         public double GenerationCount   = 0;
         private List<Tuple<int, int>> _connections;
 
-        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
+        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 250)
         {
             this.ColorsCount = k;
             this.PopulationSize = populationSize;
@@ -100,17 +100,19 @@ namespace EC_Practicum_2
                 children.Add(c2);
                 children.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
 
-                //get best 2, return those
+                ////get best 2, return those
                 Graph[] winners = new Graph[2];
                 for (int j = 0; j < 2; j++)
                 {
                     if (children[0].Item2 > parents[0].Item2)
                     {
+                        // Console.WriteLine("Parents wins");
                         winners[j] = parents[0].Item1;
                         parents.Remove(parents[0]);
                     }
                     else
                     {
+                        // Console.WriteLine("Child wins");
                         winners[j] = children[0].Item1;
                         children.Remove(children[0]);
                     }
@@ -118,6 +120,12 @@ namespace EC_Practicum_2
 
                 if (winners[0].GetConflicts() < BestFitness) BestFitness = winners[0].GetConflicts();
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
+
+
+
+                //if (children[0].Item2 < BestFitness) BestFitness = children[0].Item2;
+                //newPopulation.AddRange(new[] { parents[0].Item1, children[0].Item1 });
+
             }
             return newPopulation;
         }
