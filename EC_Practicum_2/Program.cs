@@ -10,10 +10,10 @@ namespace EC_Practicum_2
     {
         static void Main(string[] args)
         {
-            int k = 30;
+            int k = 25;
             while (true) {
-                var a = new Experiment(k, "../../dsjc250.5.txt", 100, "Expiriment 1");
-                a.Run();
+                var Expiriment = new Experiment(k, "../../le450_15c.txt", 100, "Expiriment 1");
+                Expiriment.Run();
                 k--;
             }
             

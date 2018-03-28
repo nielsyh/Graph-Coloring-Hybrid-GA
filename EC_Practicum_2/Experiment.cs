@@ -23,9 +23,10 @@ namespace EC_Practicum_2
         //Measurements
         public double VdslCount = 0;
         public double GenerationCount = 0;
+
         private List<Tuple<int, int>> _connections;
 
-        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 250)
+        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
         {
             ColorsCount = k;
             PopulationSize = populationSize;
@@ -71,7 +72,6 @@ namespace EC_Practicum_2
         public IEnumerable<Graph> GetNewGeneration()
         {
             var newPopulation = new List<Graph>();
-
             //shuffle current population
             ShufflePopulation();
 
@@ -111,27 +111,18 @@ namespace EC_Practicum_2
                 {
                     if (children[0].Item2 > parents[0].Item2)
                     {
-                        // Console.WriteLine("Parents wins");
                         winners[j] = parents[0].Item1;
                         parents.Remove(parents[0]);
                     }
                     else
                     {
-                        // Console.WriteLine("Child wins");
                         winners[j] = children[0].Item1;
                         children.Remove(children[0]);
                     }
                 }
-
                 var conflicts = winners[0].GetConflicts();
                 if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
-
-
-
-                //if (children[0].Item2 < BestFitness) BestFitness = children[0].Item2;
-                //newPopulation.AddRange(new[] { parents[0].Item1, children[0].Item1 });
-
             }
             return newPopulation;
         }
@@ -182,24 +173,22 @@ namespace EC_Practicum_2
         public void Run()
         {
             var watch = Stopwatch.StartNew();
-
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration().ToArray();
                 GenerationCount++;
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Console.WriteLine("Solution found for " + ColorsCount);
-                Console.WriteLine("------------------------------------");
-                Console.WriteLine("cputime: " + elapsedMs);
-                Console.WriteLine("vdslcnt: " + VdslCount);
-                Console.WriteLine("gencnt:" + GenerationCount);
-                Console.WriteLine("------------------------------------");
                 Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
-                
-
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("Solution found for " + ColorsCount);
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("cputime: " + elapsedMs);
+            Console.WriteLine("vdslcnt: " + VdslCount);
+            Console.WriteLine("gencnt:" + GenerationCount);
+            Console.WriteLine("------------------------------------");
+           
         }
 
         //check if valid solution found, if so decline k, if not continue..
