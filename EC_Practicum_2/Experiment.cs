@@ -75,19 +75,29 @@ namespace EC_Practicum_2
             //shuffle current population
             ShufflePopulation();
 
+            Dictionary<Graph, int> confl = new Dictionary<Graph, int>();
+
+            var startgen = DateTime.Now;
             for (int i = 0; i < PopulationSize; i += 2)
             {
+
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
                 var t1 = CrossoverGPX(p1.Item1, p2.Item1);
                 var t2 = CrossoverGPX(p1.Item1, p2.Item1);
 
+                var conflictst1 = t1.GetConflicts();
+                var conflictst2 = t2.GetConflicts();
+
+                var startLocal = DateTime.Now;
                 VDSL(t1);
                 VDSL(t2);
+                var endLocal = DateTime.Now;
+                Console.WriteLine("local search duration " + (endLocal - startLocal));
 
-                var c1 = Tuple.Create(t1, t1.GetConflicts());
-                var c2 = Tuple.Create(t2, t2.GetConflicts());
+                var c1 = Tuple.Create(t1, conflictst1);
+                var c2 = Tuple.Create(t2, conflictst2);
 
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
@@ -124,17 +134,20 @@ namespace EC_Practicum_2
                 }
 
                 var conflicts = winners[0].GetConflicts();
+
                 if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
-
-
 
                 //if (children[0].Item2 < BestFitness) BestFitness = children[0].Item2;
                 //newPopulation.AddRange(new[] { parents[0].Item1, children[0].Item1 });
 
             }
+            var endgen = DateTime.Now;
+            Console.WriteLine("Elapsed time for generation " + endgen);
+            Console.WriteLine("Best fintess " + BestFitness);
             return newPopulation;
         }
+
 
         public Graph CrossoverGPX(Graph p1, Graph p2)
         {
@@ -161,9 +174,7 @@ namespace EC_Practicum_2
 
                 var crntClr = i;
                 if (i > ColorsCount)
-                {
                     crntClr = _random.Next(1, ColorsCount + 1);
-                }
 
                 foreach (Graph.Vertex vertex in greatestCluster)
                 {
@@ -195,10 +206,10 @@ namespace EC_Practicum_2
                 Console.WriteLine("vdslcnt: " + VdslCount);
                 Console.WriteLine("gencnt:" + GenerationCount);
                 Console.WriteLine("------------------------------------");
-                Console.WriteLine("avg: " + getAverageFitness());
+                //Console.WriteLine("avg: " + GetAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
-                
+
 
         }
 
@@ -207,24 +218,37 @@ namespace EC_Practicum_2
         /// Vertex descent local search
         /// </summary>
         /// <param name="g">The graph on which to perform the search</param>
-        public IEnumerable<int> VDSL(Graph g)
+        public IEnumerable<int> VDSL(Graph g, double perc = 1)
         {
             var noImprovement = 0;
+            var random = new Random();
 
-            while (noImprovement < 100)
+            while (noImprovement < 10)
             {
 
                 //Iterate in random order WHY? TODO: answer this <-
-                var order = GenerateRandomOrder(g).ToList();
+                var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
+
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
                 foreach (var vertex in order)
                 {
+                    var cache = new HashSet<int>();
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+                    var list = new List<int>();
+                    for (int i = 0; i < g[vertex].Edges.Count * perc; i++)
+                    {
+                        var pick = -1;
 
-                    foreach (int neighbor in g[vertex].Edges)
+                        while (cache.Contains(pick) || pick == -1)
+                            pick = g[vertex].Edges[random.Next(0, g[vertex].Edges.Count)];
+
+                        list.Add(pick);
+                    }
+
+                    foreach (int neighbor in list)
                     {
                         var clr = g[neighbor].Color;
                         clrcnt[clr]++;
@@ -241,13 +265,11 @@ namespace EC_Practicum_2
             return g.GetConfiguration();
         }
 
-        public int getAverageFitness()
+        public int GetAverageFitness()
         {
             double total = 0;
             for (int i = 0; i < PopulationSize; i++)
-            {
                 total = total + CurrentPopulation[i].GetConflicts();
-            }
             return (int)(total / PopulationSize);
         }
 
