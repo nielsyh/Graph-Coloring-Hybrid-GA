@@ -102,25 +102,12 @@ namespace EC_Practicum_2
                 q.Add(match);
             }
 
-            Graph t1, t2 = null;
-
             Parallel.ForEach(q, x =>
             {
-                if (crossover == Crossover.Point)
-                {
-                    t1 = CrossoverSplit(x.G1, x.G2);
-                    t2 = CrossoverSplit(x.G1, x.G2);
-                }
-                else
-                {
-                    t1 = CrossoverGPX(x.G1, x.G2);
-                    t2 = CrossoverGPX(x.G1, x.G2);
-                }
+                Graph t1, t2 = null;
+                t1 = CrossoverGPX(x.G1, x.G2);
+                t2 = CrossoverGPX(x.G1, x.G2);
 
-                var conflictst1 = t1.GetConflicts();
-                var conflictst2 = t2.GetConflicts();
-
-                var startLocal = DateTime.Now;
 
                 var t1x = Task.Run(() =>
                 {
@@ -136,8 +123,8 @@ namespace EC_Practicum_2
                     t1x, t2x
                 });
 
-                var endLocal = DateTime.Now;
-                Console.WriteLine("local search duration " + (endLocal - startLocal));
+                var conflictst1 = t1.GetConflicts();
+                var conflictst2 = t2.GetConflicts();
 
                 var c1 = Tuple.Create(t1, conflictst1);
                 var c2 = Tuple.Create(t2, conflictst2);
