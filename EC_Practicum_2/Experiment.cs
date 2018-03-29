@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace EC_Practicum_2
 {
@@ -19,6 +20,7 @@ namespace EC_Practicum_2
         private Random _random = new Random();
         public Graph[] CurrentPopulation { get; set; }
         public int BestFitness = int.MaxValue;
+        private object _lock = new object();
 
         //Measurements
         public double VdslCount = 0;
@@ -49,8 +51,9 @@ namespace EC_Practicum_2
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
+                int j = i;
                 VDSL(tmp);
-                CurrentPopulation[i] = tmp;
+                CurrentPopulation[j] = tmp;
                 //Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
 
@@ -69,6 +72,14 @@ namespace EC_Practicum_2
             }
         }
 
+        private class Match
+        {
+            public Graph G1 { get; set; }
+            public int G1Conflicts { get; set; }
+            public Graph G2 { get; set; }
+            public int G2Conflicts { get; set; }
+        }
+
         public IEnumerable<Graph> GetNewGeneration(Crossover crossover)
         {
             var newPopulation = new List<Graph>();
@@ -76,32 +87,55 @@ namespace EC_Practicum_2
             ShufflePopulation();
 
             var confl = new Dictionary<Graph, int>();
-
             var startgen = DateTime.Now;
+            var q = new List<Match>();
+
             for (int i = 0; i < PopulationSize; i += 2)
             {
-                var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
-                var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
+                var match = new Match()
+                {
+                    G1 = CurrentPopulation[i],
+                    G1Conflicts = CurrentPopulation[i].GetConflicts(),
+                    G2 = CurrentPopulation[i + 1],
+                    G2Conflicts = CurrentPopulation[i + 1].GetConflicts()
+                };
+                q.Add(match);
+            }
 
-                Graph t1, t2 = null;
+            Graph t1, t2 = null;
 
+            Parallel.ForEach(q, x =>
+            {
                 if (crossover == Crossover.Point)
                 {
-                    t1 = CrossoverSplit(p1.Item1, p2.Item1);
-                    t2 = CrossoverSplit(p1.Item1, p2.Item1);
+                    t1 = CrossoverSplit(x.G1, x.G2);
+                    t2 = CrossoverSplit(x.G1, x.G2);
                 }
                 else
                 {
-                    t1 = CrossoverGPX(p1.Item1, p2.Item1);
-                    t2 = CrossoverGPX(p1.Item1, p2.Item1);
+                    t1 = CrossoverGPX(x.G1, x.G2);
+                    t2 = CrossoverGPX(x.G1, x.G2);
                 }
 
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
 
                 var startLocal = DateTime.Now;
-                VDSL(t1);
-                VDSL(t2);
+
+                var t1x = Task.Run(() =>
+                {
+                    VDSL(t1);
+                });
+
+                var t2x = Task.Run(() =>
+                {
+                    VDSL(t2);
+                });
+
+                Task.WaitAll(new[] {
+                    t1x, t2x
+                });
+
                 var endLocal = DateTime.Now;
                 Console.WriteLine("local search duration " + (endLocal - startLocal));
 
@@ -110,19 +144,20 @@ namespace EC_Practicum_2
 
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
-                {
-                    p1,
-                    p2
-                };
-                parents.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
+                    {
+                        new Tuple<Graph, int>(x.G1,x.G1Conflicts),
+                        new Tuple<Graph, int>(x.G2,x.G2Conflicts)
+                    };
+
+                parents.Sort((v, y) => -1 * y.Item2.CompareTo(v.Item2));
 
                 //sort children
                 var children = new List<Tuple<Graph, int>>
-                {
-                    c1,
-                    c2
-                };
-                children.Sort((x, y) => -1 * y.Item2.CompareTo(x.Item2));
+                    {
+                        c1,
+                        c2
+                    };
+                children.Sort((v, y) => -1 * y.Item2.CompareTo(v.Item2));
 
                 var winners = new Graph[2];
 
@@ -143,7 +178,7 @@ namespace EC_Practicum_2
 
                 if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
-            }
+            });
             var endgen = DateTime.Now;
             Console.WriteLine("Elapsed time for generation " + endgen);
             Console.WriteLine("Best fintess " + BestFitness);
@@ -227,10 +262,7 @@ namespace EC_Practicum_2
                     Console.WriteLine("Switching to GPX");
                     Console.WriteLine("--------------------");
                 }
-                else
-                {
-                    lc++;
-                }
+                else lc++;
 
                 if (lc > 3)
                 {
@@ -256,7 +288,6 @@ namespace EC_Practicum_2
                 Console.WriteLine("------------------------------------");
                 Console.WriteLine("best: " + BestFitness);
             }
-
         }
 
         private double ComputeVariance(Graph[] currentPopulation)
@@ -284,7 +315,7 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var random = new Random();
 
-            while (noImprovement < 250)
+            while (noImprovement < 30)
             {
                 var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
@@ -309,10 +340,15 @@ namespace EC_Practicum_2
                         clrcnt[clr]++;
                     }
 
-                    g.Color(g[vertex], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+                    lock (_lock)
+                        g.Color(g[vertex], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
                 }
 
-                if (oldFitness <= g.GetConflicts()) { noImprovement++; }
+                lock (_lock)
+                {
+                    if (oldFitness <= g.GetConflicts()) { noImprovement++; }
+                }
+
                 VdslCount++;
             }
 
@@ -342,13 +378,16 @@ namespace EC_Practicum_2
             for (var i = 0; i < g.Count; i++)
             {
                 //Random next is exclusive of the upper bound
-                var n = _random.Next(1, g.Count + 1);
+                lock (_lock)
+                {
+                    var n = _random.Next(1, g.Count + 1);
 
-                while (ba[n - 1])
-                    n = _random.Next(1, g.Count + 1);
+                    while (ba[n - 1])
+                        n = _random.Next(1, g.Count + 1);
 
-                ba[n - 1] = true;
-                data[i] = n - 1;
+                    ba[n - 1] = true;
+                    data[i] = n - 1;
+                }
             }
             return data;
         }
