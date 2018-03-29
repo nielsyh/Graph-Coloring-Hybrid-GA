@@ -48,14 +48,22 @@ namespace EC_Practicum_2
 
             //initialze all individuals of population.
             CurrentPopulation = new Graph[populationSize];
+            List<Task> tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
                 int j = i;
-                VDSL(tmp);
-                CurrentPopulation[j] = tmp;
+
+                var t = Task.Run(() =>
+                {
+                    VDSL(tmp);
+                    CurrentPopulation[j] = tmp;
+                });
+                tasks.Add(t);
                 //Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
+
+            Task.WaitAll(tasks.ToArray());
 
             Console.WriteLine("Init of " + name + " done..");
         }
