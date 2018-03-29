@@ -69,13 +69,13 @@ namespace EC_Practicum_2
             }
         }
 
-        public IEnumerable<Graph> GetNewGeneration()
+        public IEnumerable<Graph> GetNewGeneration(Crossover crossover)
         {
             var newPopulation = new List<Graph>();
             //shuffle current population
             ShufflePopulation();
 
-            Dictionary<Graph, int> confl = new Dictionary<Graph, int>();
+            var confl = new Dictionary<Graph, int>();
 
             var startgen = DateTime.Now;
             for (int i = 0; i < PopulationSize; i += 2)
@@ -84,8 +84,18 @@ namespace EC_Practicum_2
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
-                var t1 = CrossoverSplit(p1.Item1, p2.Item1);
-                var t2 = CrossoverSplit(p1.Item1, p2.Item1);
+                Graph t1, t2 = null;
+
+                if (crossover == Crossover.Point)
+                {
+                    t1 = CrossoverSplit(p1.Item1, p2.Item1);
+                    t2 = CrossoverSplit(p1.Item1, p2.Item1);
+                }
+                else
+                {
+                    t1 = CrossoverGPX(p1.Item1, p2.Item1);
+                    t2 = CrossoverGPX(p1.Item1, p2.Item1);
+                }
 
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
@@ -172,21 +182,16 @@ namespace EC_Practicum_2
 
             while (currentParent.Count > 0)
             {
-                bool search = false;
-                if (rand.NextDouble() <= 0.7) search = true;
                 //get greatest cluster from parent
-                List<Graph.Vertex> greatestCluster = new List<Graph.Vertex>();
+                var greatestCluster = new List<Graph.Vertex>();
 
-                if (search)
-                    greatestCluster = currentParent.GetGreatestColorCluster();
-                else
-                    greatestCluster = currentParent.GetGreatestColorCluster(true);
+                greatestCluster = currentParent.GetGreatestColorCluster();
 
                 var crntClr = i;
                 if (i > ColorsCount)
                     crntClr = _random.Next(1, ColorsCount + 1);
 
-                foreach (Graph.Vertex vertex in greatestCluster)
+                foreach (var vertex in greatestCluster)
                 {
                     child[vertex.Node].Color = crntClr;
                     _p1.Remove(vertex);
@@ -203,10 +208,45 @@ namespace EC_Practicum_2
         public void Run()
         {
             var watch = Stopwatch.StartNew();
+            var lc = 0;
+
+            //very bad fitness
+            var bestFitness = 999999999;
+            var crossMethod = Crossover.GPX;
+
             while (BestFitness != 0)
             {
-                CurrentPopulation = GetNewGeneration().ToArray();
+                CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
+                var fitness = GetAverageFitness();
+
+                if (fitness < bestFitness)
+                {
+                    lc = 0;
+                    crossMethod = Crossover.GPX;
+
+                    Console.WriteLine("--------------------");
+                    Console.WriteLine("Switching to GPX");
+                    Console.WriteLine("--------------------");
+                }
+                else
+                {
+                    lc++;
+                }
+
+                if (lc > 3)
+                {
+                    crossMethod = Crossover.Point;
+                    Console.WriteLine("--------------------");
+                    Console.WriteLine("Switching to point");
+                    Console.WriteLine("--------------------");
+                }
+
+                var variance = ComputeVariance(CurrentPopulation);
+
+                Console.WriteLine("Variance at for new generation : " + variance);
+
                 GenerationCount++;
+
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Console.WriteLine("Solution found for " + ColorsCount);
@@ -215,9 +255,23 @@ namespace EC_Practicum_2
                 Console.WriteLine("vdslcnt: " + VdslCount);
                 Console.WriteLine("gencnt:" + GenerationCount);
                 Console.WriteLine("------------------------------------");
-                //Console.WriteLine("avg: " + GetAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
+
+        }
+
+        private double ComputeVariance(Graph[] currentPopulation)
+        {
+            //cache conficts to avoid recomputing it below
+            var conflicts = currentPopulation.Select(x => x.GetConflicts())
+                                             .Select((x, i) => new { index = i, value = x })
+                                             .ToDictionary(i => i.index, v => v.value);
+
+            var pop = currentPopulation.Select((x, i) => new { ind = i, val = conflicts[i] * conflicts[i] });
+            var mean = pop.Sum(v => conflicts[v.ind]) / currentPopulation.Length;
+
+            //compute variance
+            return pop.Sum(x => x.val) / mean;
         }
 
 
