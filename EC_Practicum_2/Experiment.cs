@@ -108,7 +108,6 @@ namespace EC_Practicum_2
                 t1 = CrossoverGPX(x.G1, x.G2);
                 t2 = CrossoverGPX(x.G1, x.G2);
 
-
                 var t1x = Task.Run(() =>
                 {
                     VDSL(t1);
@@ -126,9 +125,6 @@ namespace EC_Practicum_2
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
 
-                var c1 = Tuple.Create(t1, conflictst1);
-                var c2 = Tuple.Create(t2, conflictst2);
-
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
                     {
@@ -141,8 +137,8 @@ namespace EC_Practicum_2
                 //sort children
                 var children = new List<Tuple<Graph, int>>
                     {
-                        c1,
-                        c2
+                        new Tuple<Graph, int>(t1,conflictst1),
+                        new Tuple<Graph, int>(t2,conflictst2)
                     };
                 children.Sort((v, y) => -1 * y.Item2.CompareTo(v.Item2));
 
@@ -162,9 +158,9 @@ namespace EC_Practicum_2
                     }
                 }
                 var conflicts = winners[0].GetConflicts();
-
                 if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
+
             });
             var endgen = DateTime.Now;
             Console.WriteLine("Elapsed time for generation " + endgen);
@@ -189,7 +185,6 @@ namespace EC_Practicum_2
             return c;
         }
 
-
         public Graph CrossoverGPX(Graph p1, Graph p2)
         {
             var _p1 = p1.Clone() as Graph;
@@ -210,7 +205,9 @@ namespace EC_Practicum_2
 
                 var crntClr = i;
                 if (i > ColorsCount)
+                {
                     crntClr = _random.Next(1, ColorsCount + 1);
+                }
 
                 foreach (var vertex in greatestCluster)
                 {
@@ -238,7 +235,7 @@ namespace EC_Practicum_2
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
-                var fitness = GetAverageFitness();
+                var fitness = getAverageFitness();
 
                 if (fitness < bestFitness)
                 {
@@ -264,17 +261,18 @@ namespace EC_Practicum_2
                 Console.WriteLine("Variance at for new generation : " + variance);
 
                 GenerationCount++;
-
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Console.WriteLine("Solution found for " + ColorsCount);
-                Console.WriteLine("------------------------------------");
-                Console.WriteLine("cputime: " + elapsedMs);
-                Console.WriteLine("vdslcnt: " + VdslCount);
-                Console.WriteLine("gencnt:" + GenerationCount);
-                Console.WriteLine("------------------------------------");
+                Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("Solution found for " + ColorsCount);
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("cputime: " + elapsedMs);
+            Console.WriteLine("vdslcnt: " + VdslCount);
+            Console.WriteLine("gencnt:" + GenerationCount);
+            Console.WriteLine("------------------------------------");
+
         }
 
         private double ComputeVariance(Graph[] currentPopulation)
@@ -297,10 +295,10 @@ namespace EC_Practicum_2
         /// Vertex descent local search
         /// </summary>
         /// <param name="g">The graph on which to perform the search</param>
-        public IEnumerable<int> VDSL(Graph g, double perc = 1)
+        public IEnumerable<int> VDSL(Graph g)
         {
             var noImprovement = 0;
-            var random = new Random();
+            var iterCount = 0;
 
             while (noImprovement < 30)
             {
@@ -312,6 +310,7 @@ namespace EC_Practicum_2
                 {
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+
                     var list = new List<int>();
 
                     for (var i = 0; i < g[vertex].Edges.Count; i++)
@@ -332,22 +331,30 @@ namespace EC_Practicum_2
                 }
 
                 lock (_lock)
-                {
+
                     if (oldFitness <= g.GetConflicts()) { noImprovement++; }
-                }
+                    else if (iterCount > 15)
+                    {
+                        Console.WriteLine("improvement after: " + iterCount);
+                        noImprovement = 0;
+                        iterCount = 0;
+                    }
 
                 VdslCount++;
+                iterCount++;
             }
 
             //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
         }
 
-        public int GetAverageFitness()
+        public int getAverageFitness()
         {
             double total = 0;
             for (int i = 0; i < PopulationSize; i++)
+            {
                 total = total + CurrentPopulation[i].GetConflicts();
+            }
             return (int)(total / PopulationSize);
         }
 
