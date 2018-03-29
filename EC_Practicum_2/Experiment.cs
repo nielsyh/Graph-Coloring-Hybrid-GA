@@ -75,29 +75,19 @@ namespace EC_Practicum_2
             //shuffle current population
             ShufflePopulation();
 
-            Dictionary<Graph, int> confl = new Dictionary<Graph, int>();
-
-            var startgen = DateTime.Now;
             for (int i = 0; i < PopulationSize; i += 2)
             {
-
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
                 var t1 = CrossoverGPX(p1.Item1, p2.Item1);
                 var t2 = CrossoverGPX(p1.Item1, p2.Item1);
 
-                var conflictst1 = t1.GetConflicts();
-                var conflictst2 = t2.GetConflicts();
-
-                var startLocal = DateTime.Now;
                 VDSL(t1);
                 VDSL(t2);
-                var endLocal = DateTime.Now;
-                Console.WriteLine("local search duration " + (endLocal - startLocal));
 
-                var c1 = Tuple.Create(t1, conflictst1);
-                var c2 = Tuple.Create(t2, conflictst2);
+                var c1 = Tuple.Create(t1, t1.GetConflicts());
+                var c2 = Tuple.Create(t2, t2.GetConflicts());
 
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
@@ -131,16 +121,11 @@ namespace EC_Practicum_2
                     }
                 }
                 var conflicts = winners[0].GetConflicts();
-
                 if (conflicts < BestFitness) BestFitness = conflicts;
                 newPopulation.AddRange(new[] { winners[0], winners[1] });
             }
-            var endgen = DateTime.Now;
-            Console.WriteLine("Elapsed time for generation " + endgen);
-            Console.WriteLine("Best fintess " + BestFitness);
             return newPopulation;
         }
-
 
         public Graph CrossoverGPX(Graph p1, Graph p2)
         {
@@ -167,7 +152,9 @@ namespace EC_Practicum_2
 
                 var crntClr = i;
                 if (i > ColorsCount)
+                {
                     crntClr = _random.Next(1, ColorsCount + 1);
+                }
 
                 foreach (Graph.Vertex vertex in greatestCluster)
                 {
@@ -190,56 +177,44 @@ namespace EC_Practicum_2
             {
                 CurrentPopulation = GetNewGeneration().ToArray();
                 GenerationCount++;
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Console.WriteLine("Solution found for " + ColorsCount);
-                Console.WriteLine("------------------------------------");
-                Console.WriteLine("cputime: " + elapsedMs);
-                Console.WriteLine("vdslcnt: " + VdslCount);
-                Console.WriteLine("gencnt:" + GenerationCount);
-                Console.WriteLine("------------------------------------");
-                //Console.WriteLine("avg: " + GetAverageFitness());
+                Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
-        }
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("Solution found for " + ColorsCount);
+            Console.WriteLine("------------------------------------");
+            Console.WriteLine("cputime: " + elapsedMs);
+            Console.WriteLine("vdslcnt: " + VdslCount);
+            Console.WriteLine("gencnt:" + GenerationCount);
+            Console.WriteLine("------------------------------------");
 
+        }
 
         //check if valid solution found, if so decline k, if not continue..
         /// <summary>
         /// Vertex descent local search
         /// </summary>
         /// <param name="g">The graph on which to perform the search</param>
-        public IEnumerable<int> VDSL(Graph g, double perc = 1)
+        public IEnumerable<int> VDSL(Graph g)
         {
             var noImprovement = 0;
-            var random = new Random();
+            var iterCount = 0;
 
-            while (noImprovement < 10)
+            while (noImprovement < 30)
             {
 
                 //Iterate in random order WHY? TODO: answer this <-
-                var order = GenerateRandomOrder(g);
+                var order = GenerateRandomOrder(g).ToList();
                 var oldFitness = g.GetConflicts();
-
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
                 foreach (var vertex in order)
                 {
-                    var cache = new HashSet<int>();
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
-                    var list = new List<int>();
-                    for (int i = 0; i < g[vertex].Edges.Count * perc; i++)
-                    {
-                        var pick = -1;
 
-                        while (cache.Contains(pick) || pick == -1)
-                            pick = g[vertex].Edges[random.Next(0, g[vertex].Edges.Count)];
-
-                        list.Add(pick);
-                    }
-
-                    foreach (int neighbor in list)
+                    foreach (int neighbor in g[vertex].Edges)
                     {
                         var clr = g[neighbor].Color;
                         clrcnt[clr]++;
@@ -248,19 +223,26 @@ namespace EC_Practicum_2
                     g.Color(g[vertex], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
                 }
 
-                if (oldFitness <= g.GetConflicts()) { noImprovement++; }
+                if (oldFitness <= g.GetConflicts()) { noImprovement++; } else if(iterCount>15) {
+                    Console.WriteLine("improvement after: " + iterCount);
+                    noImprovement = 0;
+                    iterCount = 0;
+                }
                 VdslCount++;
+                iterCount++;
             }
 
             //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
         }
 
-        public int GetAverageFitness()
+        public int getAverageFitness()
         {
             double total = 0;
             for (int i = 0; i < PopulationSize; i++)
+            {
                 total = total + CurrentPopulation[i].GetConflicts();
+            }
             return (int)(total / PopulationSize);
         }
 
