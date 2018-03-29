@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crossover.cs" />
     <Compile Include="Experiment.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="Program.cs" />
