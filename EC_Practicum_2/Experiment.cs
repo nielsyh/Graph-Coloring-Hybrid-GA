@@ -80,7 +80,6 @@ namespace EC_Practicum_2
             var startgen = DateTime.Now;
             for (int i = 0; i < PopulationSize; i += 2)
             {
-
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
@@ -223,7 +222,7 @@ namespace EC_Practicum_2
                 {
                     lc = 0;
                     crossMethod = Crossover.GPX;
-
+                    bestFitness = fitness;
                     Console.WriteLine("--------------------");
                     Console.WriteLine("Switching to GPX");
                     Console.WriteLine("--------------------");
@@ -285,7 +284,7 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var random = new Random();
 
-            while (noImprovement < 30)
+            while (noImprovement < 250)
             {
                 var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
@@ -293,7 +292,6 @@ namespace EC_Practicum_2
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
                 foreach (var vertex in order)
                 {
-                    var cache = new HashSet<int>();
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
                     var list = new List<int>();
