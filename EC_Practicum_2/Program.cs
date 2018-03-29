@@ -18,18 +18,7 @@ namespace EC_Practicum_2
             {
                 var Expiriment = new Experiment(k, "../../le450_15c.txt", 100, "Expiriment 1");
 
-                var t1 = Task.Run(() =>
-                {
-                    Expiriment.Run();
-                });
-
-                var t2 = Task.Run(() =>
-                {
-                    Expiriment.Run();
-                });
-
-                //Wait for all tasks
-                Task.WaitAll(new[] { t1, t2 });
+                Expiriment.Run();
 
                 k--;
             }

@@ -285,9 +285,8 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var random = new Random();
 
-            while (noImprovement < 100)
+            while (noImprovement < 30)
             {
-
                 var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
 
