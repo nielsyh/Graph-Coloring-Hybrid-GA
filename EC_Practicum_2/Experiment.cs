@@ -60,7 +60,6 @@ namespace EC_Practicum_2
                     CurrentPopulation[j] = tmp;
                 });
                 tasks.Add(t);
-                //Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
 
             Task.WaitAll(tasks.ToArray());
@@ -341,18 +340,18 @@ namespace EC_Practicum_2
                 lock (_lock)
 
                     if (oldFitness <= g.GetConflicts()) { noImprovement++; }
-                    else if (iterCount > 15)
-                    {
-                        Console.WriteLine("improvement after: " + iterCount);
+                    else
+                    {           
                         noImprovement = 0;
                         iterCount = 0;
+                        if (iterCount > 15) {
+                            Console.WriteLine("improvement after: " + iterCount);
+                        }
                     }
 
                 VdslCount++;
                 iterCount++;
             }
-
-            //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
         }
 
