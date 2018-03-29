@@ -84,8 +84,8 @@ namespace EC_Practicum_2
                 var p1 = Tuple.Create(CurrentPopulation[i], CurrentPopulation[i].GetConflicts());
                 var p2 = Tuple.Create(CurrentPopulation[i + 1], CurrentPopulation[i + 1].GetConflicts());
 
-                var t1 = CrossoverGPX(p1.Item1, p2.Item1);
-                var t2 = CrossoverGPX(p1.Item1, p2.Item1);
+                var t1 = CrossoverSplit(p1.Item1, p2.Item1);
+                var t2 = CrossoverSplit(p1.Item1, p2.Item1);
 
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
@@ -139,6 +139,23 @@ namespace EC_Practicum_2
             Console.WriteLine("Elapsed time for generation " + endgen);
             Console.WriteLine("Best fintess " + BestFitness);
             return newPopulation;
+        }
+
+        public Graph CrossoverSplit(Graph g1, Graph g2)
+        {
+            var c = new Graph(_connections, GraphSize, ColorsCount);
+
+            var item = _random.Next(0, g1.Count);
+            for (int i = 0; i < g1.Count; i++)
+            {
+                if (i < item)
+                    c.Color(c[i], g1[i].Color);
+                else
+                    c.Color(c[i], g2[i].Color);
+
+            }
+
+            return c;
         }
 
 
@@ -214,13 +231,11 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var random = new Random();
 
-            while (noImprovement < 10)
+            while (noImprovement < 100)
             {
 
-                //Iterate in random order WHY? TODO: answer this <-
                 var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
-
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
                 foreach (var vertex in order)
@@ -229,17 +244,15 @@ namespace EC_Practicum_2
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
                     var list = new List<int>();
-                    for (int i = 0; i < g[vertex].Edges.Count * perc; i++)
+
+                    for (var i = 0; i < g[vertex].Edges.Count; i++)
                     {
                         var pick = -1;
-
-                        while (cache.Contains(pick) || pick == -1)
-                            pick = g[vertex].Edges[random.Next(0, g[vertex].Edges.Count)];
-
+                        pick = g[vertex].Edges[i];
                         list.Add(pick);
                     }
 
-                    foreach (int neighbor in list)
+                    foreach (var neighbor in list)
                     {
                         var clr = g[neighbor].Color;
                         clrcnt[clr]++;
