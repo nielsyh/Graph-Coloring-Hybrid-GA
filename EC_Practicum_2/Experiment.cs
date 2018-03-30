@@ -102,20 +102,23 @@ namespace EC_Practicum_2
             var startgen = DateTime.Now;
             var q = new List<Match>();
 
+            //cache all the conflicts count
+            var _conflictHash = new ConcurrentDictionary<Graph, int>();
+
             for (int i = 0; i < PopulationSize; i += 2)
             {
                 var match = new Match()
                 {
                     G1 = CurrentPopulation[i],
-                    G1Conflicts = CurrentPopulation[i].GetConflicts(),
+                    G1Conflicts = _conflictHash[CurrentPopulation[i]] = CurrentPopulation[i].GetConflicts(),
                     G2 = CurrentPopulation[i + 1],
-                    G2Conflicts = CurrentPopulation[i + 1].GetConflicts()
+                    G2Conflicts = _conflictHash[CurrentPopulation[i + 1]] = CurrentPopulation[i + 1].GetConflicts()
                 };
                 q.Add(match);
             }
 
             int size = GraphSize;
-            int cc = ColorsCount;
+            var cc = ColorsCount;
 
             Parallel.ForEach(q, x =>
             {
@@ -140,6 +143,9 @@ namespace EC_Practicum_2
 
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
+
+                _conflictHash[t1] = conflictst1;
+                _conflictHash[t2] = conflictst2;
 
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
@@ -175,7 +181,7 @@ namespace EC_Practicum_2
                     }
                 }
 
-                var conflicts = winners[0].GetConflicts();
+                var conflicts = _conflictHash[winners[0]];
                 if (conflicts < BestFitness) BestFitness = conflicts;
 
                 newPopulation.Add(winners[0]);
