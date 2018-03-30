@@ -48,7 +48,7 @@ namespace EC_Practicum_2
 
             //initialze all individuals of population.
             CurrentPopulation = new Graph[populationSize];
-            List<Task> tasks = new List<Task>();
+            var tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
@@ -57,8 +57,13 @@ namespace EC_Practicum_2
                 var t = Task.Run(() =>
                 {
                     VDSL(tmp);
-                    CurrentPopulation[j] = tmp;
+
+                    lock (_lock)
+                    {
+                        CurrentPopulation[j] = tmp;
+                    }
                 });
+
                 tasks.Add(t);
             }
 
@@ -285,7 +290,7 @@ namespace EC_Practicum_2
         /// Vertex descent local search
         /// </summary>
         /// <param name="g">The graph on which to perform the search</param>
-        public IEnumerable<int> VDSL(Graph g)
+        public void VDSL(Graph g)
         {
             var noImprovement = 0;
             var iterCount = 0;
@@ -298,19 +303,22 @@ namespace EC_Practicum_2
                 for (int i = 0; i < g.Count; i++)
                 {
                     var vertex = g[i];
+
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
 
-                    foreach (var neighbor in vertex.Edges)
+                    for (int e = 0; e < g[i].Edges.Count; e++)
                     {
-                        var clr = g[neighbor].Color;
+                        var clr = g[e].Color;
                         clrcnt[clr]++;
                     }
 
                     g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+
+
                 }
 
-                int conflicts = g.GetConflicts();
+                var conflicts = g.GetConflicts();
                 if (oldFitness <= conflicts) { noImprovement++; }
                 else
                 {
@@ -327,7 +335,6 @@ namespace EC_Practicum_2
                     iterCount++;
                 }
             }
-            return g.GetConfiguration();
         }
 
         public int getAverageFitness()
