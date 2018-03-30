@@ -173,6 +173,7 @@ namespace EC_Practicum_2
             var endgen = DateTime.Now;
             Console.WriteLine("Elapsed time for generation " + endgen);
             Console.WriteLine("Best fintess " + BestFitness);
+            Console.WriteLine("AVG Fitness: " + getAverageFitness());
             return newPopulation;
         }
 
@@ -265,11 +266,8 @@ namespace EC_Practicum_2
                 }
 
                 var variance = ComputeVariance(CurrentPopulation);
-
                 Console.WriteLine("Variance at for new generation : " + variance);
-
                 GenerationCount++;
-                Console.WriteLine("avg: " + getAverageFitness());
                 Console.WriteLine("best: " + BestFitness);
             }
             watch.Stop();
@@ -308,38 +306,30 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var iterCount = 0;
 
-            while (noImprovement < 30)
+            while (noImprovement < 20)
             {
-                var order = GenerateRandomOrder(g);
                 var oldFitness = g.GetConflicts();
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
-                foreach (var vertex in order)
+                foreach (var vertex in g)
                 {
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
 
-                    var list = new List<int>();
-
-                    for (var i = 0; i < g[vertex].Edges.Count; i++)
-                    {
-                        var pick = -1;
-                        pick = g[vertex].Edges[i];
-                        list.Add(pick);
-                    }
-
-                    foreach (var neighbor in list)
+                    foreach (var neighbor in vertex.Edges)
                     {
                         var clr = g[neighbor].Color;
                         clrcnt[clr]++;
                     }
 
                     lock (_lock)
-                        g.Color(g[vertex], Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+                    {
+                        g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+                    }
                 }
 
                 lock (_lock)
-
+                {
                     if (oldFitness <= g.GetConflicts()) { noImprovement++; }
                     else if (iterCount > 15)
                     {
@@ -347,6 +337,7 @@ namespace EC_Practicum_2
                         noImprovement = 0;
                         iterCount = 0;
                     }
+                }
 
                 VdslCount++;
                 iterCount++;
@@ -364,6 +355,20 @@ namespace EC_Practicum_2
                 total = total + CurrentPopulation[i].GetConflicts();
             }
             return (int)(total / PopulationSize);
+        }
+
+        public void Shuffle(Graph g)
+        {
+            var random = new Random();
+            var n = g.Count;
+            while (n > 1)
+            {
+                n--;
+                var i = random.Next(n + 1);
+                var temp = g[i];
+                g[i] = g[n];
+                g[n] = temp;
+            }
         }
 
         /// <summary>
