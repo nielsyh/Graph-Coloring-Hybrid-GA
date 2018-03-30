@@ -60,7 +60,6 @@ namespace EC_Practicum_2
                     CurrentPopulation[j] = tmp;
                 });
                 tasks.Add(t);
-                //Console.WriteLine("conflicts: " + tmp.GetConflicts());
             }
 
             Task.WaitAll(tasks.ToArray());
@@ -331,19 +330,19 @@ namespace EC_Practicum_2
                 lock (_lock)
                 {
                     if (oldFitness <= g.GetConflicts()) { noImprovement++; }
-                    else if (iterCount > 15)
-                    {
-                        Console.WriteLine("improvement after: " + iterCount);
+                    else
+                    {           
                         noImprovement = 0;
                         iterCount = 0;
+                        if (iterCount > 15) {
+                            Console.WriteLine("improvement after: " + iterCount);
+                        }
                     }
                 }
 
                 VdslCount++;
                 iterCount++;
             }
-
-            //Console.WriteLine("after local search " + g.GetConflicts());
             return g.GetConfiguration();
         }
 
@@ -371,32 +370,5 @@ namespace EC_Practicum_2
             }
         }
 
-        /// <summary>
-        /// Maps every index to a random index(could be optimized cause of the while cycle can, in theory, run indefinitely)
-        /// Altho, in practice this works very fast
-        /// </summary>
-        /// <param name="g"></param>
-        /// <returns></returns>
-        private IEnumerable<int> GenerateRandomOrder(Graph g)
-        {
-            var ba = new BitArray(g.Count);
-            var data = new int[g.Count];
-
-            for (var i = 0; i < g.Count; i++)
-            {
-                //Random next is exclusive of the upper bound
-                lock (_lock)
-                {
-                    var n = _random.Next(1, g.Count + 1);
-
-                    while (ba[n - 1])
-                        n = _random.Next(1, g.Count + 1);
-
-                    ba[n - 1] = true;
-                    data[i] = n - 1;
-                }
-            }
-            return data;
-        }
     }
 }
