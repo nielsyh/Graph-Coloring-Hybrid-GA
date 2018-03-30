@@ -47,6 +47,7 @@ namespace EC_Practicum_2
             }
 
             //initialze all individuals of population.
+            var cache = new ConcurrentBag<Graph>();
             CurrentPopulation = new Graph[populationSize];
             var tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
@@ -57,17 +58,20 @@ namespace EC_Practicum_2
                 var t = Task.Run(() =>
                 {
                     VDSL(tmp);
-
-                    lock (_lock)
-                    {
-                        CurrentPopulation[j] = tmp;
-                    }
+                    cache.Add(tmp);
                 });
 
                 tasks.Add(t);
             }
 
             Task.WaitAll(tasks.ToArray());
+
+            int cnt = 0;
+            foreach (var item in cache)
+            {
+                CurrentPopulation[cnt] = item;
+                cnt++;
+            }
 
             Console.WriteLine("Init of " + name + " done..");
         }
