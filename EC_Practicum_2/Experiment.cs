@@ -89,7 +89,7 @@ namespace EC_Practicum_2
 
         public IEnumerable<Graph> GetNewGeneration(Crossover crossover)
         {
-            var newPopulation = new List<Graph>();
+            var newPopulation = new BlockingCollection<Graph>();
             //shuffle current population
             ShufflePopulation();
 
@@ -109,11 +109,15 @@ namespace EC_Practicum_2
                 q.Add(match);
             }
 
+            int size = GraphSize;
+            int cc = ColorsCount;
+
             Parallel.ForEach(q, x =>
             {
                 Graph t1, t2 = null;
-                t1 = CrossoverGPX(x.G1, x.G2);
-                t2 = CrossoverGPX(x.G1, x.G2);
+
+                t1 = CrossoverGPX(x.G1, x.G2, size, cc);
+                t2 = CrossoverGPX(x.G1, x.G2, size, cc);
 
                 var t1x = Task.Run(() =>
                 {
@@ -138,6 +142,7 @@ namespace EC_Practicum_2
                         new Tuple<Graph, int>(x.G1,x.G1Conflicts),
                         new Tuple<Graph, int>(x.G2,x.G2Conflicts)
                     };
+
 
                 parents.Sort((v, y) => -1 * y.Item2.CompareTo(v.Item2));
 
@@ -164,13 +169,14 @@ namespace EC_Practicum_2
                         children.Remove(children[0]);
                     }
                 }
+
                 var conflicts = winners[0].GetConflicts();
                 if (conflicts < BestFitness) BestFitness = conflicts;
-                newPopulation.AddRange(new[] { winners[0], winners[1] });
+
+                newPopulation.Add(winners[0]);
+                newPopulation.Add(winners[1]);
 
             });
-            var endgen = DateTime.Now;
-            Console.WriteLine("Elapsed time for generation " + endgen);
             Console.WriteLine("Best fintess " + BestFitness);
             Console.WriteLine("AVG Fitness: " + getAverageFitness());
             return newPopulation;
@@ -193,12 +199,12 @@ namespace EC_Practicum_2
             return c;
         }
 
-        public Graph CrossoverGPX(Graph p1, Graph p2)
+        public Graph CrossoverGPX(Graph p1, Graph p2, int size, int colors)
         {
             var _p1 = p1.Clone() as Graph;
             var _p2 = p2.Clone() as Graph;
 
-            var child = new Graph(_connections, GraphSize, ColorsCount);
+            var child = new Graph(_connections, size, colors);
             var rand = new Random();
 
             var currentParent = _p1;
@@ -214,7 +220,10 @@ namespace EC_Practicum_2
                 var crntClr = i;
                 if (i > ColorsCount)
                 {
-                    crntClr = _random.Next(1, ColorsCount + 1);
+                    lock (_lock)
+                    {
+                        crntClr = _random.Next(1, ColorsCount + 1);
+                    }
                 }
 
                 foreach (var vertex in greatestCluster)
@@ -234,40 +243,16 @@ namespace EC_Practicum_2
         public void Run()
         {
             var watch = Stopwatch.StartNew();
-            var lc = 0;
 
             //very bad fitness
-            var bestFitness = 999999999;
             var crossMethod = Crossover.GPX;
 
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
-                var fitness = getAverageFitness();
-
-                if (fitness < bestFitness)
-                {
-                    lc = 0;
-                    crossMethod = Crossover.GPX;
-                    bestFitness = fitness;
-                    Console.WriteLine("--------------------");
-                    Console.WriteLine("Switching to GPX");
-                    Console.WriteLine("--------------------");
-                }
-                else lc++;
-
-                if (lc > 3)
-                {
-                    crossMethod = Crossover.Point;
-                    Console.WriteLine("--------------------");
-                    Console.WriteLine("Switching to point");
-                    Console.WriteLine("--------------------");
-                }
-
                 var variance = ComputeVariance(CurrentPopulation);
                 Console.WriteLine("Variance at for new generation : " + variance);
                 GenerationCount++;
-                Console.WriteLine("best: " + BestFitness);
             }
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
@@ -310,8 +295,9 @@ namespace EC_Practicum_2
                 var oldFitness = g.GetConflicts();
 
                 //O(n) local search, set the color of each v to the least frequent color of its neigbors
-                foreach (var vertex in g)
+                for (int i = 0; i < g.Count; i++)
                 {
+                    var vertex = g[i];
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
 
@@ -321,27 +307,25 @@ namespace EC_Practicum_2
                         clrcnt[clr]++;
                     }
 
-                    lock (_lock)
-                    {
-                        g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
-                    }
+                    g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
                 }
 
+                int conflicts = g.GetConflicts();
+                if (oldFitness <= conflicts) { noImprovement++; }
+                else
+                {
+                    noImprovement = 0;
+                    iterCount = 0;
+                    if (iterCount > 15)
+                    {
+                        Console.WriteLine("improvement after: " + iterCount);
+                    }
+                }
                 lock (_lock)
                 {
-                    if (oldFitness <= g.GetConflicts()) { noImprovement++; }
-                    else
-                    {           
-                        noImprovement = 0;
-                        iterCount = 0;
-                        if (iterCount > 15) {
-                            Console.WriteLine("improvement after: " + iterCount);
-                        }
-                    }
+                    VdslCount++;
+                    iterCount++;
                 }
-
-                VdslCount++;
-                iterCount++;
             }
             return g.GetConfiguration();
         }
