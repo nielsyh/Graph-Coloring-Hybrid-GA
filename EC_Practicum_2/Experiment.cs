@@ -47,9 +47,8 @@ namespace EC_Practicum_2
             }
 
             //initialze all individuals of population.
-            var cache = new ConcurrentBag<Graph>();
             CurrentPopulation = new Graph[populationSize];
-            var tasks = new List<Task>();
+            List<Task> tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
@@ -58,20 +57,12 @@ namespace EC_Practicum_2
                 var t = Task.Run(() =>
                 {
                     VDSL(tmp);
-                    cache.Add(tmp);
+                    CurrentPopulation[j] = tmp;
                 });
-
                 tasks.Add(t);
             }
 
             Task.WaitAll(tasks.ToArray());
-
-            int cnt = 0;
-            foreach (var item in cache)
-            {
-                CurrentPopulation[cnt] = item;
-                cnt++;
-            }
 
             Console.WriteLine("Init of " + name + " done..");
         }
@@ -102,27 +93,25 @@ namespace EC_Practicum_2
             //shuffle current population
             ShufflePopulation();
 
-            var confl = new Dictionary<Graph, int>();
             var startgen = DateTime.Now;
             var q = new List<Match>();
 
-            //cache all the conflicts count
-            var _conflictHash = new ConcurrentDictionary<Graph, int>();
+            var _cache = new ConcurrentDictionary<Graph, int>();
 
             for (int i = 0; i < PopulationSize; i += 2)
             {
                 var match = new Match()
                 {
                     G1 = CurrentPopulation[i],
-                    G1Conflicts = _conflictHash[CurrentPopulation[i]] = CurrentPopulation[i].GetConflicts(),
+                    G1Conflicts = _cache[CurrentPopulation[i]] = CurrentPopulation[i].GetConflicts(),
                     G2 = CurrentPopulation[i + 1],
-                    G2Conflicts = _conflictHash[CurrentPopulation[i + 1]] = CurrentPopulation[i + 1].GetConflicts()
+                    G2Conflicts = _cache[CurrentPopulation[i + 1]] = CurrentPopulation[i + 1].GetConflicts()
                 };
                 q.Add(match);
             }
 
             int size = GraphSize;
-            var cc = ColorsCount;
+            int cc = ColorsCount;
 
             Parallel.ForEach(q, x =>
             {
@@ -130,6 +119,7 @@ namespace EC_Practicum_2
 
                 t1 = CrossoverGPX(x.G1, x.G2, size, cc);
                 t2 = CrossoverGPX(x.G1, x.G2, size, cc);
+
 
                 var t1x = Task.Run(() =>
                 {
@@ -148,8 +138,8 @@ namespace EC_Practicum_2
                 var conflictst1 = t1.GetConflicts();
                 var conflictst2 = t2.GetConflicts();
 
-                _conflictHash[t1] = conflictst1;
-                _conflictHash[t2] = conflictst2;
+                _cache[t1] = conflictst1;
+                _cache[t2] = conflictst2;
 
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
@@ -185,7 +175,7 @@ namespace EC_Practicum_2
                     }
                 }
 
-                var conflicts = _conflictHash[winners[0]];
+                var conflicts = _cache[winners[0]];
                 if (conflicts < BestFitness) BestFitness = conflicts;
 
                 newPopulation.Add(winners[0]);
@@ -300,7 +290,7 @@ namespace EC_Practicum_2
         /// Vertex descent local search
         /// </summary>
         /// <param name="g">The graph on which to perform the search</param>
-        public void VDSL(Graph g)
+        public IEnumerable<int> VDSL(Graph g)
         {
             var noImprovement = 0;
             var iterCount = 0;
@@ -313,15 +303,14 @@ namespace EC_Practicum_2
                 for (int i = 0; i < g.Count; i++)
                 {
                     var vertex = g[i];
-
                     var clrcnt = new int[g.ColorCtn + 1];
                     clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
-
-                    for (int e = 0; e < g[i].Edges.Count; e++)
+                    foreach (var neighbor in vertex.Edges)
                     {
-                        var clr = g[e].Color;
+                        var clr = g[neighbor].Color;
                         clrcnt[clr]++;
                     }
+
 
                     g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
 
@@ -345,6 +334,7 @@ namespace EC_Practicum_2
                     iterCount++;
                 }
             }
+            return g.GetConfiguration();
         }
 
         public int getAverageFitness()
