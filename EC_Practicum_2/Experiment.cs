@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using Newtonsoft.Json;
 
 namespace EC_Practicum_2
 {
@@ -21,6 +22,8 @@ namespace EC_Practicum_2
         public Graph[] CurrentPopulation { get; set; }
         public int BestFitness = int.MaxValue;
         private object _lock = new object();
+        private List<double> avgs = new List<double>();
+        private List<double> bst = new List<double>();
 
         //Measurements
         public double VdslCount = 0;
@@ -182,8 +185,20 @@ namespace EC_Practicum_2
                 newPopulation.Add(winners[1]);
 
             });
+            var avg = GetAverageFitness();
             Console.WriteLine("Best fintess " + BestFitness);
-            Console.WriteLine("AVG Fitness: " + getAverageFitness());
+            Console.WriteLine("AVG Fitness: " + avg);
+            avgs.Add(avg);
+            bst.Add(BestFitness);
+
+            //Flush on every 100 generations;
+            if (avgs.Count % 100 == 0)
+            {
+                File.AppendAllText("avgs.json", JsonConvert.SerializeObject(avgs));
+                File.AppendAllText("bst.json", JsonConvert.SerializeObject(bst));
+                avgs.Clear();
+                bst.Clear();
+            }
             return newPopulation;
         }
 
@@ -252,10 +267,18 @@ namespace EC_Practicum_2
             //very bad fitness
             var crossMethod = Crossover.GPX;
 
+            List<double> v = new List<double>();
+
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
                 var variance = ComputeVariance(CurrentPopulation);
+                v.Add(variance);
+                if (v.Count % 1000 == 0)
+                {
+                    File.AppendAllText("vari.json", JsonConvert.SerializeObject(variance));
+                    v.Clear();
+                }
                 Console.WriteLine("Variance at for new generation : " + variance);
                 GenerationCount++;
             }
@@ -337,7 +360,7 @@ namespace EC_Practicum_2
             return g.GetConfiguration();
         }
 
-        public int getAverageFitness()
+        public int GetAverageFitness()
         {
             double total = 0;
             for (int i = 0; i < PopulationSize; i++)
