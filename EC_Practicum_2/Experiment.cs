@@ -240,10 +240,7 @@ namespace EC_Practicum_2
                 var crntClr = i;
                 if (i > ColorsCount)
                 {
-                    lock (_lock)
-                    {
-                        crntClr = _random.Next(1, ColorsCount + 1);
-                    }
+                    crntClr = rand.Next(1, ColorsCount + 1);
                 }
 
                 foreach (var vertex in greatestCluster)
