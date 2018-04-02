@@ -399,20 +399,20 @@ namespace EC_Practicum_2
 
         public void CalcFitnessCorrelationCoefficient()
         {
-            List<double> parentFitnessNOVDLS = new List<double>();
-            List<double> parentFitnessVDLS = new List<double>();      
-            List<double> childrenFitnessNOVDLS = new List<double>();
-            List<double> childrenFitnessVDLS = new List<double>();
+            List<double> parentFitnessNOVDLS    = new List<double>();
+            List<double> parentFitnessVDLS      = new List<double>();      
+            List<double> childrenFitnessNOVDLS  = new List<double>();
+            List<double> childrenFitnessVDLS    = new List<double>();
 
             Console.WriteLine("CalcFitnessCorrelationCoefficient");
             Console.WriteLine("--------------------------------------");           
         
-            foreach (Graph p in CurrentPopulation) //individual fitness
+            foreach (Graph p in CurrentPopulation) //individual fitness parent with vdls
             {
                 parentFitnessVDLS.Add((double)p.GetConflicts());
             }
 
-            foreach (Graph p in OriginalPopulation) //individual fitness
+            foreach (Graph p in OriginalPopulation) //individual fitnessparent with novdls
             {
                 parentFitnessNOVDLS.Add((double)p.GetConflicts());
             }
@@ -426,7 +426,7 @@ namespace EC_Practicum_2
                 childPopulationNOVDLS[i + 1]    = c2;
             }
 
-            foreach (Graph c in childPopulationNOVDLS)
+            foreach (Graph c in childPopulationNOVDLS) //individual fitnesschildren with novdls
             {
                 childrenFitnessNOVDLS.Add((double)c.GetConflicts());
             }
@@ -436,18 +436,22 @@ namespace EC_Practicum_2
                 VDSL(childPopulationVDLS[i]); 
             }
 
-            foreach (Graph c in childPopulationVDLS)
+            foreach (Graph c in childPopulationVDLS) //individual fitnesschildren with vdls
             {
                 childrenFitnessVDLS.Add((double)c.GetConflicts());
             }
 
-            Console.WriteLine("        P(NOVDSL):     P(VDSL):     C(NOVDLS):     C(VDLS):");
-            Console.WriteLine("AVG:     " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessNOVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessNOVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("Covariance:");
+            //Covariance parent child NOVDLS
             var cov_pnovdsl_cnovdsl = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitnessNOVDLS, childrenFitnessNOVDLS);
-            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + cov_pnovdsl_cnovdsl);
+            //Covariance parent child VDLS
             var cov_pvdls_cvdls = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitnessVDLS, childrenFitnessVDLS);
+
+            //Print statistics
+            Console.WriteLine("P(NOVDSL), P(VDSL), C(NOVDLS), C(VDLS):");
+            Console.WriteLine("AVG: " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Covariance:");          
+            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + cov_pnovdsl_cnovdsl);      
             Console.WriteLine("P(VDSL) & C(VDSL): " + cov_pvdls_cvdls);
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("Fitness correlation coefficient");
@@ -455,6 +459,5 @@ namespace EC_Practicum_2
             Console.WriteLine("P(VDSL) & C(VDSL): " + cov_pvdls_cvdls / (MathNet.Numerics.Statistics.Statistics.Variance(parentFitnessVDLS) * MathNet.Numerics.Statistics.Statistics.Variance(childrenFitnessVDLS)));
             Console.WriteLine("--------------------------------------");
         }
-
 }
 }
