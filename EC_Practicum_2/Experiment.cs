@@ -125,10 +125,12 @@ namespace EC_Practicum_2
             var size = GraphSize;
             var cc = ColorsCount;
 
-            CalcFitnessCorrelationCoefficient();
-
-            if (corr.Count % 100 == 0)
-                File.AppendAllText("corr.json", JsonConvert.SerializeObject(corr));
+            if (avgs.Count == 99)
+            {
+                CalcFitnessCorrelationCoefficient();
+                if (corr.Count % 10 == 0)
+                    File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
+            }
 
             Parallel.ForEach(q, x =>
             {
@@ -218,23 +220,6 @@ namespace EC_Practicum_2
                 bst.Clear();
             }
             return newPopulation;
-        }
-
-        public Graph CrossoverSplit(Graph g1, Graph g2)
-        {
-            var c = new Graph(_connections, GraphSize, ColorsCount);
-
-            var item = _random.Next(0, g1.Count);
-            for (int i = 0; i < g1.Count; i++)
-            {
-                if (i < item)
-                    c.Color(c[i], g1[i].Color);
-                else
-                    c.Color(c[i], g2[i].Color);
-
-            }
-
-            return c;
         }
 
         public Graph CrossoverGPX(Graph p1, Graph p2, int size, int colors)
