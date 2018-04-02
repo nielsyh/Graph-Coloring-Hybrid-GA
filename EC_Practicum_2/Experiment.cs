@@ -26,6 +26,7 @@ namespace EC_Practicum_2
         private object _lock = new object();
         private List<double> avgs = new List<double>();
         private List<double> bst = new List<double>();
+        private List<Tuple<double, double>> corr = new List<Tuple<double, double>>();
 
         //Measurements
         public double VdslCount = 0;
@@ -106,7 +107,7 @@ namespace EC_Practicum_2
 
             var _cache = new ConcurrentDictionary<Graph, int>();
 
-            for (int i = 0; i < PopulationSize; i += 2)
+            for (var i = 0; i < PopulationSize; i += 2)
             {
                 var match = new Match()
                 {
@@ -118,10 +119,13 @@ namespace EC_Practicum_2
                 q.Add(match);
             }
 
-            int size = GraphSize;
-            int cc = ColorsCount;
+            var size = GraphSize;
+            var cc = ColorsCount;
 
             CalcFitnessCorrelationCoefficient();
+
+            if (corr.Count % 100 == 0)
+                File.AppendAllText("corr.json", JsonConvert.SerializeObject(corr));
 
             Parallel.ForEach(q, x =>
             {
@@ -401,26 +405,23 @@ namespace EC_Practicum_2
 
         public void CalcFitnessCorrelationCoefficient()
         {
-            List<double> parentFitnessNOVDLS = new List<double>();
-            List<double> parentFitnessVDLS = new List<double>();
-            List<double> childrenFitnessNOVDLS = new List<double>();
-            List<double> childrenFitnessVDLS = new List<double>();
+            var parentFitnessNOVDLS = new List<double>();
+            var parentFitnessVDLS = new List<double>();
+            var childrenFitnessNOVDLS = new List<double>();
+            var childrenFitnessVDLS = new List<double>();
 
             Console.WriteLine("CalcFitnessCorrelationCoefficient");
             Console.WriteLine("--------------------------------------");
 
-            foreach (Graph p in CurrentPopulation) //individual fitness parent with vdls
-            {
+            foreach (var p in CurrentPopulation) //individual fitness parent with vdls
                 parentFitnessVDLS.Add(p.GetConflicts());
-            }
 
-            foreach (Graph p in OriginalPopulation) //individual fitnessparent with novdls
-            {
+            foreach (var p in OriginalPopulation) //individual fitnessparent with novdls
                 parentFitnessNOVDLS.Add(p.GetConflicts());
-            }
 
             var childPopulationNOVDLS = new Graph[PopulationSize];
-            for (int i = 0; i < PopulationSize; i += 2) //generate all children
+
+            for (var i = 0; i < PopulationSize; i += 2) //generate all children
             {
                 var c1 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
                 var c2 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
@@ -428,27 +429,20 @@ namespace EC_Practicum_2
                 childPopulationNOVDLS[i + 1] = c2;
             }
 
-            foreach (Graph c in childPopulationNOVDLS) //individual fitnesschildren with novdls
-            {
+            foreach (var c in childPopulationNOVDLS) //individual fitnesschildren with novdls
                 childrenFitnessNOVDLS.Add(c.GetConflicts());
-            }
 
             var childPopulationVDLS = childPopulationNOVDLS;
-            for (int i = 0; i < PopulationSize; i++)
-            {
+            for (var i = 0; i < PopulationSize; i++)
                 VDSL(childPopulationVDLS[i]);
-            }
 
-            foreach (Graph c in childPopulationVDLS) //individual fitnesschildren with vdls
-            {
+            foreach (var c in childPopulationVDLS) //individual fitnesschildren with vdls
                 childrenFitnessVDLS.Add(c.GetConflicts());
-            }
 
             //Covariance parent child NOVDLS
             var cov_pnovdsl_cnovdsl = Statistics.Covariance(parentFitnessNOVDLS, childrenFitnessNOVDLS);
             //Covariance parent child VDLS
             var cov_pvdls_cvdls = Statistics.Covariance(parentFitnessVDLS, childrenFitnessVDLS);
-
 
             var pandc = cov_pvdls_cvdls / (Statistics.Variance(parentFitnessVDLS) * Statistics.Variance(childrenFitnessVDLS));
             var nonc = cov_pnovdsl_cnovdsl / (Statistics.Variance(parentFitnessNOVDLS) * Statistics.Variance(childrenFitnessNOVDLS));
@@ -467,6 +461,8 @@ namespace EC_Practicum_2
             Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(pandc, 3));
 
             Console.WriteLine("--------------------------------------");
+
+            corr.Add(new Tuple<double, double>(pandc, nonc));
         }
     }
 }
