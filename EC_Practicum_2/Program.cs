@@ -13,10 +13,10 @@ namespace EC_Practicum_2
             var tc = new MyTestClass();
             tc.TestGraph();
             tc.TestCluster();
-            int k = 5;
+            int k = 18;
             while (true)
             {
-                var Expiriment = new Experiment(k, "../../dsjc250.5.txt", 80, "Expiriment 1");
+                var Expiriment = new Experiment(k, "../../le450_15c.txt", 80, "Expiriment 1");
                 Expiriment.Run();
 
                 k--;
