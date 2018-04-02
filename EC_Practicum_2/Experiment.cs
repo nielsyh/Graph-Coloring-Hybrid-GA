@@ -21,6 +21,7 @@ namespace EC_Practicum_2
         public int PopulationSize { get; set; }
         private Random _random = new Random();
         public Graph[] CurrentPopulation { get; set; }
+        public Graph[] OriginalPopulation { get; set; }
         public int BestFitness = int.MaxValue;
         private object _lock = new object();
         private List<double> avgs = new List<double>();
@@ -52,12 +53,15 @@ namespace EC_Practicum_2
 
             //initialze all individuals of population.
             CurrentPopulation = new Graph[populationSize];
+            OriginalPopulation = new Graph[populationSize]; //NEED THE ORIGINAL POPULATION FOR CROSSOVER COV. COR.
+
+            
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
                 int j = i;
-
+                OriginalPopulation[j] = tmp.Clone() as Graph; //p1.Clone() as Graph;
                 var t = Task.Run(() =>
                 {
                     VDSL(tmp);
@@ -395,7 +399,8 @@ namespace EC_Practicum_2
 
         public void CalcFitnessCorrelationCoefficient()
         {
-            List<double> parentFitness = new List<double>();
+            List<double> parentFitnessNOVDLS = new List<double>();
+            List<double> parentFitnessVDLS = new List<double>();      
             List<double> childrenFitnessNOVDLS = new List<double>();
             List<double> childrenFitnessVDLS = new List<double>();
 
@@ -404,7 +409,12 @@ namespace EC_Practicum_2
         
             foreach (Graph p in CurrentPopulation) //individual fitness
             {
-                parentFitness.Add((double)p.GetConflicts());
+                parentFitnessVDLS.Add((double)p.GetConflicts());
+            }
+
+            foreach (Graph p in OriginalPopulation) //individual fitness
+            {
+                parentFitnessNOVDLS.Add((double)p.GetConflicts());
             }
 
             var childPopulationNOVDLS = new Graph[PopulationSize];          
@@ -431,18 +441,18 @@ namespace EC_Practicum_2
                 childrenFitnessVDLS.Add((double)c.GetConflicts());
             }
 
-            Console.WriteLine("        P:     C(NOVDLS):     C(VDLS):");
-            Console.WriteLine("avg:     " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitness) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessNOVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
+            Console.WriteLine("        P(NOVDSL):     P(VDSL):     C(NOVDLS):     C(VDLS):");
+            Console.WriteLine("AVG:     " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessNOVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(parentFitnessVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessNOVDLS) + "     " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("Covariance:");
-            var cov_p_cnovdsl = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitness, childrenFitnessNOVDLS);
-            Console.WriteLine("P & C(NOVDSL): " + cov_p_cnovdsl);
-            var cov_p_cvdls = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitness, childrenFitnessVDLS);
-            Console.WriteLine("P & C(VDSL): " + cov_p_cvdls);
+            var cov_pnovdsl_cnovdsl = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitnessNOVDLS, childrenFitnessNOVDLS);
+            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + cov_pnovdsl_cnovdsl);
+            var cov_pvdls_cvdls = MathNet.Numerics.Statistics.Statistics.Covariance(parentFitnessVDLS, childrenFitnessVDLS);
+            Console.WriteLine("P(VDSL) & C(VDSL): " + cov_pvdls_cvdls);
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("Fitness correlation coefficient");
-            Console.WriteLine("P & C(NOVDSL): " + cov_p_cnovdsl / (MathNet.Numerics.Statistics.Statistics.Variance(parentFitness) * MathNet.Numerics.Statistics.Statistics.Variance(childrenFitnessNOVDLS)));
-            Console.WriteLine("P & C(VDSL): " + cov_p_cvdls / (MathNet.Numerics.Statistics.Statistics.Variance(parentFitness) * MathNet.Numerics.Statistics.Statistics.Variance(childrenFitnessVDLS)));
+            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + cov_pnovdsl_cnovdsl / (MathNet.Numerics.Statistics.Statistics.Variance(parentFitnessNOVDLS) * MathNet.Numerics.Statistics.Statistics.Variance(childrenFitnessNOVDLS)));
+            Console.WriteLine("P(VDSL) & C(VDSL): " + cov_pvdls_cvdls / (MathNet.Numerics.Statistics.Statistics.Variance(parentFitnessVDLS) * MathNet.Numerics.Statistics.Statistics.Variance(childrenFitnessVDLS)));
             Console.WriteLine("--------------------------------------");
         }
 

@@ -14,7 +14,7 @@ namespace EC_Practicum_2
             tc.TestGraph();
             tc.TestCluster();
 
-            var E = new Experiment(15, "../../le450_15c.txt", 100, "Expiriment 1");
+            var E = new Experiment(15, "../../le450_15c.txt", 100, "CALC Fitness Correlation Coefficient");
             E.CalcFitnessCorrelationCoefficient();
 
 
