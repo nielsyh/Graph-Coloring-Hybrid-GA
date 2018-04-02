@@ -55,7 +55,7 @@ namespace EC_Practicum_2
             CurrentPopulation = new Graph[populationSize];
             OriginalPopulation = new Graph[populationSize]; //NEED THE ORIGINAL POPULATION FOR CROSSOVER COV. COR.
 
-            
+
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
@@ -401,46 +401,47 @@ namespace EC_Practicum_2
 
         public void CalcFitnessCorrelationCoefficient()
         {
-            List<double> parentFitnessNOVDLS    = new List<double>();
-            List<double> parentFitnessVDLS      = new List<double>();      
-            List<double> childrenFitnessNOVDLS  = new List<double>();
-            List<double> childrenFitnessVDLS    = new List<double>();
+            List<double> parentFitnessNOVDLS = new List<double>();
+            List<double> parentFitnessVDLS = new List<double>();
+            List<double> childrenFitnessNOVDLS = new List<double>();
+            List<double> childrenFitnessVDLS = new List<double>();
 
             Console.WriteLine("CalcFitnessCorrelationCoefficient");
-            Console.WriteLine("--------------------------------------");           
-        
+            Console.WriteLine("--------------------------------------");
+
             foreach (Graph p in CurrentPopulation) //individual fitness parent with vdls
             {
-                parentFitnessVDLS.Add((double)p.GetConflicts());
+                parentFitnessVDLS.Add(p.GetConflicts());
             }
 
             foreach (Graph p in OriginalPopulation) //individual fitnessparent with novdls
             {
-                parentFitnessNOVDLS.Add((double)p.GetConflicts());
+                parentFitnessNOVDLS.Add(p.GetConflicts());
             }
 
-            var childPopulationNOVDLS = new Graph[PopulationSize];          
+            var childPopulationNOVDLS = new Graph[PopulationSize];
             for (int i = 0; i < PopulationSize; i += 2) //generate all children
             {
                 var c1 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
                 var c2 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
-                childPopulationNOVDLS[i]        = c1;
-                childPopulationNOVDLS[i + 1]    = c2;
+                childPopulationNOVDLS[i] = c1;
+                childPopulationNOVDLS[i + 1] = c2;
             }
 
             foreach (Graph c in childPopulationNOVDLS) //individual fitnesschildren with novdls
             {
-                childrenFitnessNOVDLS.Add((double)c.GetConflicts());
+                childrenFitnessNOVDLS.Add(c.GetConflicts());
             }
 
             var childPopulationVDLS = childPopulationNOVDLS;
-            for (int i = 0; i < PopulationSize; i++) {
-                VDSL(childPopulationVDLS[i]); 
+            for (int i = 0; i < PopulationSize; i++)
+            {
+                VDSL(childPopulationVDLS[i]);
             }
 
             foreach (Graph c in childPopulationVDLS) //individual fitnesschildren with vdls
             {
-                childrenFitnessVDLS.Add((double)c.GetConflicts());
+                childrenFitnessVDLS.Add(c.GetConflicts());
             }
 
             //Covariance parent child NOVDLS
@@ -456,16 +457,16 @@ namespace EC_Practicum_2
             Console.WriteLine("P(NOVDSL), P(VDSL), C(NOVDLS), C(VDLS):");
             Console.WriteLine("AVG: " + Statistics.Mean(parentFitnessNOVDLS) + ", " + Statistics.Mean(parentFitnessVDLS) + ", " + Statistics.Mean(childrenFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
             Console.WriteLine("--------------------------------------");
-            Console.WriteLine("Covariance:");          
-            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + cov_pnovdsl_cnovdsl);      
-            Console.WriteLine("P(VDSL) & C(VDSL): " + cov_pvdls_cvdls);
+            Console.WriteLine("Covariance:");
+            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(cov_pnovdsl_cnovdsl, 3));
+            Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(cov_pvdls_cvdls, 3));
 
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("Fitness correlation coefficient");
-            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(nonc,3));
+            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(nonc, 3));
             Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(pandc, 3));
 
             Console.WriteLine("--------------------------------------");
         }
-}
+    }
 }
