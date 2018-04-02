@@ -18,6 +18,9 @@ namespace EC_Practicum_2
         Random rnd = new Random();
         public int ColorsCount { get; set; }
         public int GraphSize { get; set; }
+
+        private string _fileIdentifier;
+
         public int PopulationSize { get; set; }
         private Random _random = new Random();
         public Graph[] CurrentPopulation { get; set; }
@@ -34,11 +37,12 @@ namespace EC_Practicum_2
 
         private List<Tuple<int, int>> _connections;
 
-        public Experiment(int k, string graphInputPath, int populationSize, string name, int graphSize = 450)
+        public Experiment(int k, string graphInputPath, int populationSize, string name, string fileNameIdentifier, int graphSize = 450)
         {
             ColorsCount = k;
             PopulationSize = populationSize;
             GraphSize = graphSize;
+            _fileIdentifier = fileNameIdentifier;
 
             //Parse Graph text file
             _connections = new List<Tuple<int, int>>();
@@ -56,8 +60,7 @@ namespace EC_Practicum_2
             CurrentPopulation = new Graph[populationSize];
             OriginalPopulation = new Graph[populationSize]; //NEED THE ORIGINAL POPULATION FOR CROSSOVER COV. COR.
 
-
-            List<Task> tasks = new List<Task>();
+            var tasks = new List<Task>();
             for (int i = 0; i < PopulationSize; i++)
             {
                 var tmp = new Graph(_connections, graphSize, k);
@@ -197,16 +200,20 @@ namespace EC_Practicum_2
 
             });
             var avg = GetAverageFitness();
-            Console.WriteLine("Best fintess " + BestFitness);
-            Console.WriteLine("AVG Fitness: " + avg);
+
+
+
             avgs.Add(avg);
             bst.Add(BestFitness);
 
             //Flush on every 100 generations;
             if (avgs.Count % 100 == 0)
             {
-                File.AppendAllText("avgs.json", JsonConvert.SerializeObject(avgs));
-                File.AppendAllText("bst.json", JsonConvert.SerializeObject(bst));
+                Console.WriteLine("Best fintess " + BestFitness);
+                Console.WriteLine("AVG Fitness: " + avg);
+
+                File.AppendAllText(_fileIdentifier + "avgs.json", JsonConvert.SerializeObject(avgs));
+                File.AppendAllText(_fileIdentifier + "bst.json", JsonConvert.SerializeObject(bst));
                 avgs.Clear();
                 bst.Clear();
             }
@@ -275,19 +282,21 @@ namespace EC_Practicum_2
             //very bad fitness
             var crossMethod = Crossover.GPX;
 
-            List<double> v = new List<double>();
+            var v = new List<double>();
 
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
                 var variance = ComputeVariance(CurrentPopulation);
                 v.Add(variance);
-                if (v.Count % 1000 == 0)
+
+                if (v.Count % 100 == 0)
                 {
-                    File.AppendAllText("vari.json", JsonConvert.SerializeObject(variance));
+                    File.AppendAllText(_fileIdentifier + "vari.json", JsonConvert.SerializeObject(variance));
                     v.Clear();
                 }
-                Console.WriteLine("Variance at for new generation : " + variance);
+
+                //Console.WriteLine("Variance at for new generation : " + variance);
                 GenerationCount++;
             }
             watch.Stop();
@@ -410,8 +419,8 @@ namespace EC_Practicum_2
             var childrenFitnessNOVDLS = new List<double>();
             var childrenFitnessVDLS = new List<double>();
 
-            Console.WriteLine("CalcFitnessCorrelationCoefficient");
-            Console.WriteLine("--------------------------------------");
+            //Console.WriteLine("CalcFitnessCorrelationCoefficient");
+            //Console.WriteLine("--------------------------------------");
 
             foreach (var p in CurrentPopulation) //individual fitness parent with vdls
                 parentFitnessVDLS.Add(p.GetConflicts());
@@ -448,19 +457,19 @@ namespace EC_Practicum_2
             var nonc = cov_pnovdsl_cnovdsl / (Statistics.Variance(parentFitnessNOVDLS) * Statistics.Variance(childrenFitnessNOVDLS));
 
             //Print statistics
-            Console.WriteLine("P(NOVDSL), P(VDSL), C(NOVDLS), C(VDLS):");
-            Console.WriteLine("AVG: " + Statistics.Mean(parentFitnessNOVDLS) + ", " + Statistics.Mean(parentFitnessVDLS) + ", " + Statistics.Mean(childrenFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("Covariance:");
-            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(cov_pnovdsl_cnovdsl, 3));
-            Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(cov_pvdls_cvdls, 3));
+            //Console.WriteLine("P(NOVDSL), P(VDSL), C(NOVDLS), C(VDLS):");
+            //Console.WriteLine("AVG: " + Statistics.Mean(parentFitnessNOVDLS) + ", " + Statistics.Mean(parentFitnessVDLS) + ", " + Statistics.Mean(childrenFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
+            //Console.WriteLine("--------------------------------------");
+            //Console.WriteLine("Covariance:");
+            //Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(cov_pnovdsl_cnovdsl, 3));
+            //Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(cov_pvdls_cvdls, 3));
 
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("Fitness correlation coefficient");
-            Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(nonc, 3));
-            Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(pandc, 3));
+            //Console.WriteLine("--------------------------------------");
+            //Console.WriteLine("Fitness correlation coefficient");
+            //Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(nonc, 3));
+            //Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(pandc, 3));
 
-            Console.WriteLine("--------------------------------------");
+            //Console.WriteLine("--------------------------------------");
 
             corr.Add(new Tuple<double, double>(pandc, nonc));
         }

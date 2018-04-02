@@ -13,18 +13,21 @@ namespace EC_Practicum_2
             var tc = new MyTestClass();
             tc.TestGraph();
             tc.TestCluster();
-          
-            
 
-            int k = 25;
-            while (true)
+            for (var i = 0; i < 5; i++)
             {
-                var E = new Experiment(k, "../../le450_15c.txt", 80, "CALC Fitness Correlation Coefficient");
-                E.CalcFitnessCorrelationCoefficient();
-                E.Run();
-                
+                var k = 18;
 
-                k--;
+                while (true)
+                {
+                    if (k == 14) break;
+
+                    var e = new Experiment(k, "../../le450_15c.txt", 80, "CALC Fitness Correlation Coefficient", "run" + i + "_k" + k + "_");
+
+                    e.Run();
+                    k--;
+                }
+
             }
         }
     }
