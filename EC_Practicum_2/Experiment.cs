@@ -31,6 +31,8 @@ namespace EC_Practicum_2
         private List<double> bst = new List<double>();
         private List<Tuple<double, double>> corr = new List<Tuple<double, double>>();
 
+        private int[] _random_clr_array;
+
         //Measurements
         public double VdslCount = 0;
         public double GenerationCount = 0;
@@ -43,6 +45,12 @@ namespace EC_Practicum_2
             PopulationSize = populationSize;
             GraphSize = graphSize;
             _fileIdentifier = fileNameIdentifier;
+
+            _random_clr_array = new int[ColorsCount];
+            for (int i = 0; i < ColorsCount; i++)
+            {
+                _random_clr_array[i] = i + 1;
+            }
 
             //Parse Graph text file
             _connections = new List<Tuple<int, int>>();
@@ -88,6 +96,21 @@ namespace EC_Practicum_2
                 int r = rnd.Next(t, CurrentPopulation.Length);
                 CurrentPopulation[t] = CurrentPopulation[r];
                 CurrentPopulation[r] = tmp;
+            }
+        }
+
+        public void shuffleClrs() {
+            lock (_lock)
+            {
+                for (int i = 0; i < ColorsCount; i++)
+                {
+
+                    int r = rnd.Next(0, ColorsCount);
+
+                    var tmp = _random_clr_array[i];
+                    _random_clr_array[i] = _random_clr_array[r];
+                    _random_clr_array[r] = tmp;
+                }
             }
         }
 
@@ -209,7 +232,7 @@ namespace EC_Practicum_2
             bst.Add(BestFitness);
 
             //Flush on every 100 generations;
-            if (avgs.Count % 100 == 0)
+            if (avgs.Count % 10 == 0)
             {
                 Console.WriteLine("Best fintess " + BestFitness);
                 Console.WriteLine("AVG Fitness: " + avg);
@@ -318,9 +341,8 @@ namespace EC_Practicum_2
         public IEnumerable<int> VDSL(Graph g)
         {
             var noImprovement = 0;
-            var iterCount = 0;
 
-            while (noImprovement < 20)
+            while (noImprovement < 100)
             {
                 var oldFitness = g.GetConflicts();
 
@@ -329,38 +351,59 @@ namespace EC_Practicum_2
                 {
                     var vertex = g[i];
                     var clrcnt = new int[g.ColorCtn + 1];
-                    clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+                    clrcnt[0] = 9999; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
                     foreach (var neighbor in vertex.Edges)
                     {
                         var clr = g[neighbor].Color;
+                        if (clr == 0) { Console.WriteLine("FOUND CLR 0"); }
                         clrcnt[clr]++;
                     }
+                    //Array.IndexOf
+                    lock (_lock)
+                    {
+                        g.Color(vertex, indexOfND(clrcnt, clrcnt.Min()));
+                    } //set to colour of the least frequent color of the neighbors (optimal 0) 
 
 
-                    g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
-
-
-                }
+                    }
 
                 var conflicts = g.GetConflicts();
                 if (oldFitness <= conflicts) { noImprovement++; }
                 else
-                {
+                {              
+                    //if (noImprovement > 15)
+                    //{
+                    //    Console.WriteLine("improvement after: " + noImprovement);
+                    //}
                     noImprovement = 0;
-                    iterCount = 0;
-                    if (iterCount > 15)
-                    {
-                        Console.WriteLine("improvement after: " + iterCount);
-                    }
+
                 }
                 lock (_lock)
                 {
-                    VdslCount++;
-                    iterCount++;
+                    VdslCount++;           
                 }
+
             }
             return g.GetConfiguration();
         }
+
+        public int indexOfND(int[] a, int f) {
+            shuffleClrs();
+
+            for (int i = 0; i < ColorsCount; i++) {
+                if (a[_random_clr_array[i]] == f) {
+                    var c = _random_clr_array[i];
+                    if (c == 0) {
+                        Console.WriteLine();
+                    }
+                    return c;
+                }
+            }
+            Console.WriteLine("INDEX OF ND FAILURE HIT NIELS");
+            return 0;    
+        }
+
+
 
         public int GetAverageFitness()
         {
