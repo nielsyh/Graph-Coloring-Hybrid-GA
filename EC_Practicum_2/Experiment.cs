@@ -36,6 +36,7 @@ namespace EC_Practicum_2
         public double GenerationCount = 0;
 
         private List<Tuple<int, int>> _connections;
+        private const int _iterCount = 60;
 
         public Experiment(int k, string graphInputPath, int populationSize, string name, string fileNameIdentifier, int graphSize = 450)
         {
@@ -106,7 +107,7 @@ namespace EC_Practicum_2
             ShufflePopulation();
 
             var startgen = DateTime.Now;
-            var q = new List<Match>();
+            var matched_pairs = new List<Match>();
 
             var _cache = new ConcurrentDictionary<Graph, int>();
 
@@ -119,25 +120,25 @@ namespace EC_Practicum_2
                     G2 = CurrentPopulation[i + 1],
                     G2Conflicts = _cache[CurrentPopulation[i + 1]] = CurrentPopulation[i + 1].GetConflicts()
                 };
-                q.Add(match);
+                matched_pairs.Add(match);
             }
 
             var size = GraphSize;
             var cc = ColorsCount;
 
-            if (avgs.Count == 99)
-            {
-                CalcFitnessCorrelationCoefficient();
-                if (corr.Count % 10 == 0)
-                    File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
-            }
+            //if (avgs.Count == 99)
+            //{
+            //    CalcFitnessCorrelationCoefficient();
+            //    if (corr.Count % 10 == 0)
+            //        File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
+            //}
 
-            Parallel.ForEach(q, x =>
+            Parallel.ForEach(matched_pairs, pair =>
             {
                 Graph t1, t2 = null;
 
-                t1 = CrossoverGPX(x.G1, x.G2, size, cc);
-                t2 = CrossoverGPX(x.G1, x.G2, size, cc);
+                t1 = CrossoverGPX(pair.G1, pair.G2, size, cc);
+                t2 = CrossoverGPX(pair.G1, pair.G2, size, cc);
 
 
                 var t1x = Task.Run(() =>
@@ -163,8 +164,8 @@ namespace EC_Practicum_2
                 //sort parents
                 var parents = new List<Tuple<Graph, int>>
                     {
-                        new Tuple<Graph, int>(x.G1,x.G1Conflicts),
-                        new Tuple<Graph, int>(x.G2,x.G2Conflicts)
+                        new Tuple<Graph, int>(pair.G1,pair.G1Conflicts),
+                        new Tuple<Graph, int>(pair.G2,pair.G2Conflicts)
                     };
 
 
@@ -272,6 +273,7 @@ namespace EC_Practicum_2
             while (BestFitness != 0)
             {
                 CurrentPopulation = GetNewGeneration(crossMethod).ToArray();
+
                 var variance = ComputeVariance(CurrentPopulation);
                 v.Add(variance);
 
@@ -320,7 +322,7 @@ namespace EC_Practicum_2
             var noImprovement = 0;
             var iterCount = 0;
 
-            while (noImprovement < 20)
+            while (noImprovement < _iterCount)
             {
                 var oldFitness = g.GetConflicts();
 
