@@ -126,12 +126,16 @@ namespace EC_Practicum_2
             var size = GraphSize;
             var cc = ColorsCount;
 
-            //if (avgs.Count == 99)
-            //{
-            //    CalcFitnessCorrelationCoefficient();
-            //    if (corr.Count % 10 == 0)
-            //        File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
-            //}
+            if (avgs.Count % 30 == 0)
+            {
+                CalcFitnessCorrelationCoefficient();
+
+                if (corr.Count % 10 == 0)
+                {
+                    File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
+                    corr.Clear();
+                }
+            }
 
             Parallel.ForEach(matched_pairs, pair =>
             {
@@ -321,7 +325,7 @@ namespace EC_Practicum_2
         {
             var noImprovement = 0;
 
-            while (noImprovement < _iterCount)
+            while (noImprovement < 100)
             {
                 var oldFitness = g.GetConflicts();
 
