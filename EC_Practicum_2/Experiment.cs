@@ -341,11 +341,8 @@ namespace EC_Practicum_2
                         if (clr == 0) { Console.WriteLine("FOUND CLR 0"); }
                         clrcnt[clr]++;
                     }
-                    //Array.IndexOf
-                    lock (_lock)
-                    {
-                        g.Color(vertex, IndexOfND(clrcnt));
-                    } //set to colour of the least frequent color of the neighbors (optimal 0) 
+
+                    g.Color(vertex, IndexOfND(clrcnt));
 
 
                 }
