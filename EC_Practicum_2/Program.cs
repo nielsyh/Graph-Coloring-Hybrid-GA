@@ -22,7 +22,7 @@ namespace EC_Practicum_2
                 {
                     if (k == 14) break;
 
-                    var e = new Experiment(k, "../../le450_15c.txt", 120, "CALC Fitness Correlation Coefficient", "run" + i + "_k" + k + "_");
+                    var e = new Experiment(k, "../../le450_15c.txt", 100, "CALC Fitness Correlation Coefficient", "run" + i + "_k" + k + "_");
 
                     e.Run();
                     k--;

@@ -210,7 +210,7 @@ namespace EC_Practicum_2
             bst.Add(BestFitness);
 
             //Flush on every 100 generations;
-            if (avgs.Count % 100 == 0)
+            if (avgs.Count % 10 == 0)
             {
                 Console.WriteLine("Best fintess " + BestFitness);
                 Console.WriteLine("AVG Fitness: " + avg);
@@ -320,7 +320,6 @@ namespace EC_Practicum_2
         public IEnumerable<int> VDSL(Graph g)
         {
             var noImprovement = 0;
-            var iterCount = 0;
 
             while (noImprovement < _iterCount)
             {
@@ -331,15 +330,18 @@ namespace EC_Practicum_2
                 {
                     var vertex = g[i];
                     var clrcnt = new int[g.ColorCtn + 1];
-                    clrcnt[0] = int.MaxValue; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
+                    clrcnt[0] = 9999; //because clr 0 does not exist and I dont want to -1 first everything and then reverse this... =)
                     foreach (var neighbor in vertex.Edges)
                     {
                         var clr = g[neighbor].Color;
+                        if (clr == 0) { Console.WriteLine("FOUND CLR 0"); }
                         clrcnt[clr]++;
                     }
-
-
-                    g.Color(vertex, Array.IndexOf(clrcnt, clrcnt.Min())); //set to colour of the least frequent color of the neighbors (optimal 0)
+                    //Array.IndexOf
+                    lock (_lock)
+                    {
+                        g.Color(vertex, IndexOfND(clrcnt));
+                    } //set to colour of the least frequent color of the neighbors (optimal 0) 
 
 
                 }
@@ -348,21 +350,50 @@ namespace EC_Practicum_2
                 if (oldFitness <= conflicts) { noImprovement++; }
                 else
                 {
+                    //if (noImprovement > 15)
+                    //{
+                    //    Console.WriteLine("improvement after: " + noImprovement);
+                    //}
                     noImprovement = 0;
-                    iterCount = 0;
-                    if (iterCount > 15)
-                    {
-                        Console.WriteLine("improvement after: " + iterCount);
-                    }
+
                 }
                 lock (_lock)
                 {
                     VdslCount++;
-                    iterCount++;
                 }
+
             }
             return g.GetConfiguration();
         }
+
+        public int IndexOfND(int[] colorsCount)
+        {
+            var minColor = int.MaxValue;
+            var x = new List<int>();
+            var random = new Random();
+
+            for (var i = 0; i < colorsCount.Length; i++)
+            {
+
+                if (colorsCount[i] == minColor)
+                {
+                    x.Add(i);
+                }
+
+                if (colorsCount[i] < minColor)
+                {
+                    x.Clear();
+                    x.Add(i);
+
+                    minColor = colorsCount[i];
+                }
+            }
+
+            var pick = random.Next(0, x.Count);
+            return x[pick];
+        }
+
+
 
         public int GetAverageFitness()
         {
