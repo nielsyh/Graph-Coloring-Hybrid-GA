@@ -126,7 +126,7 @@ namespace EC_Practicum_2
             var size = GraphSize;
             var cc = ColorsCount;
 
-            if (avgs.Count % 30 == 0)
+            if (avgs.Count % 30 == 0 && avgs.Count > 0)
             {
                 CalcFitnessCorrelationCoefficient();
 
@@ -415,20 +415,6 @@ namespace EC_Practicum_2
                 total = total + _population[i].GetConflicts();
             }
             return (int)(total / PopulationSize);
-        }
-
-        public void Shuffle(Graph g)
-        {
-            var random = new Random();
-            var n = g.Count;
-            while (n > 1)
-            {
-                n--;
-                var i = random.Next(n + 1);
-                var temp = g[i];
-                g[i] = g[n];
-                g[n] = temp;
-            }
         }
 
         public void CalcFitnessCorrelationCoefficient()
