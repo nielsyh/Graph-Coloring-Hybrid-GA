@@ -126,16 +126,13 @@ namespace EC_Practicum_2
             var size = GraphSize;
             var cc = ColorsCount;
 
-            if (avgs.Count % 30 == 0 && avgs.Count > 0)
-            {
-                CalcFitnessCorrelationCoefficient();
 
-                if (corr.Count % 10 == 0)
-                {
-                    File.AppendAllText(_fileIdentifier + "corr.json", JsonConvert.SerializeObject(corr));
-                    corr.Clear();
-                }
+            if (this.avgs.Count % 100 == 0)
+            {
+                this.CalcFitnessCorrelationCoefficient();
             }
+
+            CalcFitnessCorrelationCoefficient();
 
             Parallel.ForEach(matched_pairs, pair =>
             {
@@ -290,8 +287,10 @@ namespace EC_Practicum_2
                 //Console.WriteLine("Variance at for new generation : " + variance);
                 GenerationCount++;
             }
+
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
+
             Console.WriteLine("Solution found for " + ColorsCount);
             Console.WriteLine("------------------------------------");
             Console.WriteLine("cputime: " + elapsedMs);
@@ -427,56 +426,53 @@ namespace EC_Practicum_2
             //Console.WriteLine("CalcFitnessCorrelationCoefficient");
             //Console.WriteLine("--------------------------------------");
 
-            foreach (var p in CurrentPopulation) //individual fitness parent with vdls
-                parentFitnessVDLS.Add(p.GetConflicts());
+            var N = 15;
+            var K = 2;
 
-            foreach (var p in OriginalPopulation) //individual fitnessparent with novdls
-                parentFitnessNOVDLS.Add(p.GetConflicts());
-
-            var childPopulationNOVDLS = new Graph[PopulationSize];
-
-            for (var i = 0; i < PopulationSize; i += 2) //generate all children
+            var cos = new List<List<Graph>>();
+            for (int i = 0; i < N; i++)
             {
-                var c1 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
-                var c2 = CrossoverGPX(CurrentPopulation[i], CurrentPopulation[i + 1], GraphSize, ColorsCount);
-                childPopulationNOVDLS[i] = c1;
-                childPopulationNOVDLS[i + 1] = c2;
+                List<Graph> x;
+                cos.Add(x = new List<Graph>());
+
+                for (int j = 0; j < K; j++)
+                    x.Add(CurrentPopulation[_random.Next(CurrentPopulation.Length)]);
+
+                var f = x.First();
+                var l = x.Last();
+
+                var child1 = CrossoverGPX(f, l, GraphSize, ColorsCount);
+                var child2 = CrossoverGPX(f, l, GraphSize, ColorsCount);
+                var lc = new List<Graph> { child1, child2 };
+
+                //Covariance parent child VDLS
+                var plx = x.Select(nt => (double)nt.GetConflicts());
+                var plc = lc.Select(v => (double)v.GetConflicts());
+
+                var parent_mean = plx.Sum() / plx.Count();
+                var child_mean = plc.Sum() / plc.Count();
+
+                var pandc = Statistics.Covariance(plx, plc) / (Statistics.StandardDeviation(plx) * Statistics.StandardDeviation(plc));
+
+                Console.WriteLine("Fitness correlation coefficient");
+                Console.WriteLine(pandc);
+                Console.WriteLine("--------------------------------------");
             }
-
-            foreach (var c in childPopulationNOVDLS) //individual fitnesschildren with novdls
-                childrenFitnessNOVDLS.Add(c.GetConflicts());
-
-            var childPopulationVDLS = childPopulationNOVDLS;
-            for (var i = 0; i < PopulationSize; i++)
-                VDSL(childPopulationVDLS[i]);
-
-            foreach (var c in childPopulationVDLS) //individual fitnesschildren with vdls
-                childrenFitnessVDLS.Add(c.GetConflicts());
-
-            //Covariance parent child NOVDLS
-            var cov_pnovdsl_cnovdsl = Statistics.Covariance(parentFitnessNOVDLS, childrenFitnessNOVDLS);
-            //Covariance parent child VDLS
-            var cov_pvdls_cvdls = Statistics.Covariance(parentFitnessVDLS, childrenFitnessVDLS);
-
-            var pandc = cov_pvdls_cvdls / (Statistics.Variance(parentFitnessVDLS) * Statistics.Variance(childrenFitnessVDLS));
-            var nonc = cov_pnovdsl_cnovdsl / (Statistics.Variance(parentFitnessNOVDLS) * Statistics.Variance(childrenFitnessNOVDLS));
 
             //Print statistics
             //Console.WriteLine("P(NOVDSL), P(VDSL), C(NOVDLS), C(VDLS):");
-            //Console.WriteLine("AVG: " + Statistics.Mean(parentFitnessNOVDLS) + ", " + Statistics.Mean(parentFitnessVDLS) + ", " + Statistics.Mean(childrenFitnessNOVDLS) + ", " + MathNet.Numerics.Statistics.Statistics.Mean(childrenFitnessVDLS));
+            //Console.WriteLine("AVG: " + Statistics.Mean(parentFitnessNOVDLS) + ", " + 
+            //    Statistics.Mean(parentFitnessVDLS) + ", " + 
+            //    Statistics.Mean(childrenFitnessNOVDLS) + ", " +
+            //    Statistics.Mean(childrenFitnessVDLS));
+
             //Console.WriteLine("--------------------------------------");
             //Console.WriteLine("Covariance:");
             //Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(cov_pnovdsl_cnovdsl, 3));
             //Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(cov_pvdls_cvdls, 3));
 
             //Console.WriteLine("--------------------------------------");
-            //Console.WriteLine("Fitness correlation coefficient");
-            //Console.WriteLine("P(NOVDSL) & C(NOVDSL): " + Math.Round(nonc, 3));
-            //Console.WriteLine("P(VDSL) & C(VDSL): " + Math.Round(pandc, 3));
 
-            //Console.WriteLine("--------------------------------------");
-
-            corr.Add(new Tuple<double, double>(pandc, nonc));
         }
     }
 }

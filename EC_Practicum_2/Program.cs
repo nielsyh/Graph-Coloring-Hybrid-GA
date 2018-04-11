@@ -16,12 +16,12 @@ namespace EC_Practicum_2
 
             for (var i = 0; i < 5; i++)
             {
-                var k = 30;
+                var k = 18;
 
                 while (true)
                 {
-                    var e = new Experiment(k, "../../dsjc250.5.txt", 100, "CALC Fitness Correlation Coefficient", "250x.5.txt" + i + "_k" + k + "_");
-                    if (k <= 4) break;
+                    var e = new Experiment(k, "../../le450_15c.txt", 100, "CALC Fitness Correlation Coefficient", "vs.5.txt" + i + "_k" + k + "_");
+                    if (k <= 14) break;
                     e.Run();
                     k--;
                 }
