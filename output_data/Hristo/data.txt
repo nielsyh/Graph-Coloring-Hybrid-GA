@@ -1,0 +1,990 @@
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 50
+AVG Fitness: 63
+Best fintess 45
+AVG Fitness: 58
+Best fintess 45
+AVG Fitness: 56
+Best fintess 34
+AVG Fitness: 53
+Best fintess 34
+AVG Fitness: 52
+Best fintess 34
+AVG Fitness: 51
+Best fintess 34
+AVG Fitness: 49
+Best fintess 34
+AVG Fitness: 48
+Best fintess 34
+AVG Fitness: 47
+Best fintess 34
+AVG Fitness: 47
+Best fintess 34
+AVG Fitness: 46
+Best fintess 34
+AVG Fitness: 45
+Best fintess 34
+AVG Fitness: 44
+Best fintess 32
+AVG Fitness: 44
+Best fintess 30
+AVG Fitness: 43
+Best fintess 30
+AVG Fitness: 42
+Best fintess 28
+AVG Fitness: 41
+Best fintess 27
+AVG Fitness: 40
+Best fintess 18
+AVG Fitness: 39
+Best fintess 18
+AVG Fitness: 39
+Best fintess 18
+AVG Fitness: 38
+Best fintess 18
+AVG Fitness: 38
+Best fintess 18
+AVG Fitness: 37
+Best fintess 18
+AVG Fitness: 36
+Best fintess 18
+AVG Fitness: 36
+Best fintess 18
+AVG Fitness: 35
+Best fintess 17
+AVG Fitness: 34
+Best fintess 17
+AVG Fitness: 33
+Best fintess 17
+AVG Fitness: 33
+Best fintess 17
+AVG Fitness: 33
+Best fintess 17
+AVG Fitness: 32
+Best fintess 17
+AVG Fitness: 31
+Best fintess 12
+AVG Fitness: 30
+Best fintess 12
+AVG Fitness: 30
+Best fintess 9
+AVG Fitness: 29
+Best fintess 9
+AVG Fitness: 29
+Best fintess 9
+AVG Fitness: 29
+Best fintess 9
+AVG Fitness: 28
+Best fintess 8
+AVG Fitness: 27
+Best fintess 8
+AVG Fitness: 27
+Best fintess 5
+AVG Fitness: 26
+Best fintess 5
+AVG Fitness: 26
+Best fintess 5
+AVG Fitness: 25
+Best fintess 5
+AVG Fitness: 25
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 23
+Best fintess 5
+AVG Fitness: 23
+Best fintess 5
+AVG Fitness: 22
+Best fintess 5
+AVG Fitness: 22
+Best fintess 5
+AVG Fitness: 21
+Best fintess 5
+AVG Fitness: 20
+Best fintess 5
+AVG Fitness: 20
+Best fintess 5
+AVG Fitness: 19
+Best fintess 5
+AVG Fitness: 19
+Best fintess 5
+AVG Fitness: 19
+Best fintess 5
+AVG Fitness: 18
+Best fintess 3
+AVG Fitness: 18
+Best fintess 3
+AVG Fitness: 17
+Best fintess 3
+AVG Fitness: 17
+Best fintess 3
+AVG Fitness: 17
+Best fintess 1
+AVG Fitness: 16
+Solution found for 18
+------------------------------------
+cputime: 15885929
+vdslcnt: 22438916
+gencnt:645
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 79
+AVG Fitness: 92
+Best fintess 71
+AVG Fitness: 87
+Best fintess 69
+AVG Fitness: 83
+Best fintess 62
+AVG Fitness: 80
+Best fintess 56
+AVG Fitness: 77
+Best fintess 56
+AVG Fitness: 74
+Best fintess 56
+AVG Fitness: 72
+Best fintess 53
+AVG Fitness: 70
+Best fintess 51
+AVG Fitness: 68
+Best fintess 36
+AVG Fitness: 67
+Best fintess 36
+AVG Fitness: 64
+Best fintess 36
+AVG Fitness: 63
+Best fintess 36
+AVG Fitness: 62
+Best fintess 18
+AVG Fitness: 60
+Best fintess 17
+AVG Fitness: 57
+Best fintess 17
+AVG Fitness: 55
+Best fintess 17
+AVG Fitness: 53
+Best fintess 17
+AVG Fitness: 50
+Best fintess 17
+AVG Fitness: 48
+Best fintess 7
+AVG Fitness: 46
+Best fintess 7
+AVG Fitness: 43
+Best fintess 1
+AVG Fitness: 40
+Best fintess 1
+AVG Fitness: 35
+Best fintess 1
+AVG Fitness: 31
+Best fintess 1
+AVG Fitness: 28
+Solution found for 17
+------------------------------------
+cputime: 6453212
+vdslcnt: 8790841
+gencnt:252
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 102
+AVG Fitness: 126
+Best fintess 91
+AVG Fitness: 119
+Best fintess 86
+AVG Fitness: 114
+Best fintess 72
+AVG Fitness: 109
+Best fintess 53
+AVG Fitness: 103
+Best fintess 45
+AVG Fitness: 99
+Best fintess 28
+AVG Fitness: 96
+Best fintess 11
+AVG Fitness: 89
+Best fintess 11
+AVG Fitness: 77
+Best fintess 6
+AVG Fitness: 66
+Solution found for 16
+------------------------------------
+cputime: 2645299
+vdslcnt: 3617720
+gencnt:104
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 150
+AVG Fitness: 170
+Best fintess 138
+AVG Fitness: 163
+Best fintess 125
+AVG Fitness: 156
+Best fintess 125
+AVG Fitness: 152
+Best fintess 46
+AVG Fitness: 146
+Best fintess 46
+AVG Fitness: 139
+Best fintess 13
+AVG Fitness: 123
+Best fintess 4
+AVG Fitness: 87
+Best fintess 1
+AVG Fitness: 33
+Solution found for 15
+------------------------------------
+cputime: 2416385
+vdslcnt: 3332686
+gencnt:98
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 46
+AVG Fitness: 62
+Best fintess 46
+AVG Fitness: 57
+Best fintess 40
+AVG Fitness: 54
+Best fintess 35
+AVG Fitness: 52
+Best fintess 35
+AVG Fitness: 51
+Best fintess 35
+AVG Fitness: 49
+Best fintess 35
+AVG Fitness: 48
+Best fintess 35
+AVG Fitness: 47
+Best fintess 35
+AVG Fitness: 46
+Best fintess 35
+AVG Fitness: 46
+Best fintess 34
+AVG Fitness: 45
+Best fintess 34
+AVG Fitness: 45
+Best fintess 29
+AVG Fitness: 44
+Best fintess 29
+AVG Fitness: 43
+Best fintess 29
+AVG Fitness: 42
+Best fintess 28
+AVG Fitness: 41
+Best fintess 27
+AVG Fitness: 40
+Best fintess 10
+AVG Fitness: 39
+Best fintess 10
+AVG Fitness: 38
+Best fintess 10
+AVG Fitness: 37
+Best fintess 10
+AVG Fitness: 36
+Best fintess 10
+AVG Fitness: 35
+Best fintess 10
+AVG Fitness: 35
+Best fintess 10
+AVG Fitness: 34
+Best fintess 10
+AVG Fitness: 34
+Best fintess 10
+AVG Fitness: 34
+Best fintess 7
+AVG Fitness: 33
+Best fintess 7
+AVG Fitness: 32
+Best fintess 7
+AVG Fitness: 31
+Best fintess 1
+AVG Fitness: 31
+Best fintess 1
+AVG Fitness: 31
+Best fintess 1
+AVG Fitness: 30
+Best fintess 1
+AVG Fitness: 29
+Best fintess 1
+AVG Fitness: 28
+Best fintess 1
+AVG Fitness: 27
+Best fintess 1
+AVG Fitness: 26
+Best fintess 1
+AVG Fitness: 25
+Best fintess 1
+AVG Fitness: 25
+Best fintess 1
+AVG Fitness: 25
+Best fintess 1
+AVG Fitness: 24
+Best fintess 1
+AVG Fitness: 23
+Best fintess 1
+AVG Fitness: 22
+Best fintess 1
+AVG Fitness: 22
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 50
+AVG Fitness: 63
+Best fintess 49
+AVG Fitness: 59
+Best fintess 46
+AVG Fitness: 56
+Best fintess 46
+AVG Fitness: 55
+Best fintess 44
+AVG Fitness: 54
+Best fintess 41
+AVG Fitness: 52
+Best fintess 39
+AVG Fitness: 51
+Best fintess 39
+AVG Fitness: 50
+Best fintess 39
+AVG Fitness: 49
+Best fintess 39
+AVG Fitness: 49
+Best fintess 38
+AVG Fitness: 48
+Best fintess 38
+AVG Fitness: 47
+Best fintess 33
+AVG Fitness: 46
+Best fintess 33
+AVG Fitness: 46
+Best fintess 33
+AVG Fitness: 45
+Best fintess 30
+AVG Fitness: 45
+Best fintess 30
+AVG Fitness: 44
+Best fintess 30
+AVG Fitness: 44
+Best fintess 26
+AVG Fitness: 43
+Best fintess 26
+AVG Fitness: 42
+Best fintess 26
+AVG Fitness: 41
+Best fintess 7
+AVG Fitness: 40
+Best fintess 7
+AVG Fitness: 39
+Best fintess 7
+AVG Fitness: 38
+Best fintess 7
+AVG Fitness: 38
+Best fintess 7
+AVG Fitness: 37
+Best fintess 7
+AVG Fitness: 36
+Best fintess 7
+AVG Fitness: 36
+Best fintess 7
+AVG Fitness: 35
+Best fintess 7
+AVG Fitness: 34
+Best fintess 7
+AVG Fitness: 34
+Best fintess 7
+AVG Fitness: 33
+Best fintess 7
+AVG Fitness: 33
+Best fintess 7
+AVG Fitness: 32
+Best fintess 7
+AVG Fitness: 31
+Best fintess 3
+AVG Fitness: 31
+Best fintess 3
+AVG Fitness: 30
+Best fintess 3
+AVG Fitness: 30
+Best fintess 3
+AVG Fitness: 29
+Best fintess 3
+AVG Fitness: 28
+Best fintess 3
+AVG Fitness: 27
+Best fintess 3
+AVG Fitness: 27
+Best fintess 3
+AVG Fitness: 27
+Best fintess 3
+AVG Fitness: 26
+Best fintess 3
+AVG Fitness: 26
+Best fintess 3
+AVG Fitness: 25
+Best fintess 3
+AVG Fitness: 25
+Best fintess 3
+AVG Fitness: 24
+Best fintess 3
+AVG Fitness: 23
+Best fintess 3
+AVG Fitness: 23
+Best fintess 3
+AVG Fitness: 22
+Best fintess 3
+AVG Fitness: 21
+Best fintess 3
+AVG Fitness: 20
+Solution found for 18
+------------------------------------
+cputime: 13342421
+vdslcnt: 18814318
+gencnt:537
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 81
+AVG Fitness: 93
+Best fintess 65
+AVG Fitness: 86
+Best fintess 65
+AVG Fitness: 83
+Best fintess 65
+AVG Fitness: 80
+Best fintess 65
+AVG Fitness: 78
+Best fintess 53
+AVG Fitness: 75
+Best fintess 51
+AVG Fitness: 73
+Best fintess 42
+AVG Fitness: 71
+Best fintess 40
+AVG Fitness: 69
+Best fintess 35
+AVG Fitness: 67
+Best fintess 33
+AVG Fitness: 64
+Best fintess 33
+AVG Fitness: 62
+Best fintess 20
+AVG Fitness: 59
+Best fintess 20
+AVG Fitness: 57
+Best fintess 20
+AVG Fitness: 55
+Best fintess 3
+AVG Fitness: 52
+Best fintess 1
+AVG Fitness: 48
+Best fintess 1
+AVG Fitness: 44
+Best fintess 1
+AVG Fitness: 41
+Solution found for 17
+------------------------------------
+cputime: 4956449
+vdslcnt: 6899070
+gencnt:199
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 106
+AVG Fitness: 129
+Best fintess 54
+AVG Fitness: 120
+Best fintess 54
+AVG Fitness: 113
+Best fintess 54
+AVG Fitness: 108
+Best fintess 13
+AVG Fitness: 103
+Best fintess 13
+AVG Fitness: 98
+Best fintess 13
+AVG Fitness: 93
+Best fintess 13
+AVG Fitness: 89
+Best fintess 13
+AVG Fitness: 85
+Best fintess 6
+AVG Fitness: 75
+Solution found for 16
+------------------------------------
+cputime: 2810433
+vdslcnt: 3617837
+gencnt:106
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 139
+AVG Fitness: 171
+Best fintess 134
+AVG Fitness: 159
+Best fintess 113
+AVG Fitness: 150
+Best fintess 113
+AVG Fitness: 142
+Best fintess 8
+AVG Fitness: 122
+Best fintess 8
+AVG Fitness: 66
+Best fintess 2
+AVG Fitness: 19
+Solution found for 15
+------------------------------------
+cputime: 1929217
+vdslcnt: 2412598
+gencnt:73
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 47
+AVG Fitness: 60
+Best fintess 45
+AVG Fitness: 57
+Best fintess 39
+AVG Fitness: 55
+Best fintess 39
+AVG Fitness: 53
+Best fintess 39
+AVG Fitness: 52
+Best fintess 34
+AVG Fitness: 50
+Best fintess 33
+AVG Fitness: 49
+Best fintess 33
+AVG Fitness: 48
+Best fintess 33
+AVG Fitness: 47
+Best fintess 33
+AVG Fitness: 46
+Best fintess 33
+AVG Fitness: 45
+Best fintess 32
+AVG Fitness: 45
+Best fintess 32
+AVG Fitness: 44
+Best fintess 32
+AVG Fitness: 44
+Best fintess 32
+AVG Fitness: 43
+Best fintess 32
+AVG Fitness: 42
+Best fintess 32
+AVG Fitness: 41
+Best fintess 32
+AVG Fitness: 41
+Best fintess 32
+AVG Fitness: 40
+Best fintess 26
+AVG Fitness: 40
+Best fintess 17
+AVG Fitness: 39
+Best fintess 13
+AVG Fitness: 38
+Best fintess 13
+AVG Fitness: 38
+Best fintess 13
+AVG Fitness: 37
+Best fintess 13
+AVG Fitness: 36
+Best fintess 13
+AVG Fitness: 36
+Best fintess 13
+AVG Fitness: 36
+Best fintess 13
+AVG Fitness: 35
+Best fintess 13
+AVG Fitness: 34
+Best fintess 13
+AVG Fitness: 33
+Best fintess 12
+AVG Fitness: 33
+Best fintess 12
+AVG Fitness: 32
+Best fintess 12
+AVG Fitness: 32
+Best fintess 12
+AVG Fitness: 32
+Best fintess 12
+AVG Fitness: 31
+Best fintess 5
+AVG Fitness: 29
+Best fintess 5
+AVG Fitness: 29
+Best fintess 5
+AVG Fitness: 28
+Best fintess 5
+AVG Fitness: 28
+Best fintess 5
+AVG Fitness: 27
+Best fintess 5
+AVG Fitness: 26
+Best fintess 5
+AVG Fitness: 25
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 24
+Best fintess 5
+AVG Fitness: 23
+Best fintess 1
+AVG Fitness: 22
+Best fintess 1
+AVG Fitness: 20
+Best fintess 1
+AVG Fitness: 19
+Best fintess 1
+AVG Fitness: 19
+Best fintess 1
+AVG Fitness: 18
+Best fintess 1
+AVG Fitness: 17
+Solution found for 18
+------------------------------------
+cputime: 13661878
+vdslcnt: 18023682
+gencnt:514
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 56
+AVG Fitness: 91
+Best fintess 56
+AVG Fitness: 86
+Best fintess 56
+AVG Fitness: 82
+Best fintess 56
+AVG Fitness: 80
+Best fintess 56
+AVG Fitness: 77
+Best fintess 50
+AVG Fitness: 74
+Best fintess 50
+AVG Fitness: 71
+Best fintess 40
+AVG Fitness: 69
+Best fintess 40
+AVG Fitness: 67
+Best fintess 40
+AVG Fitness: 65
+
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 54
+AVG Fitness: 62
+Best fintess 42
+AVG Fitness: 58
+Best fintess 42
+AVG Fitness: 57
+Best fintess 42
+AVG Fitness: 55
+Best fintess 41
+AVG Fitness: 54
+Best fintess 41
+AVG Fitness: 53
+Best fintess 40
+AVG Fitness: 51
+Best fintess 37
+AVG Fitness: 50
+Best fintess 37
+AVG Fitness: 49
+Best fintess 37
+AVG Fitness: 49
+Best fintess 37
+AVG Fitness: 47
+Best fintess 37
+AVG Fitness: 47
+Best fintess 37
+AVG Fitness: 46
+Best fintess 29
+AVG Fitness: 45
+Best fintess 29
+AVG Fitness: 43
+Best fintess 22
+AVG Fitness: 42
+Best fintess 22
+AVG Fitness: 41
+Best fintess 22
+AVG Fitness: 41
+Best fintess 22
+AVG Fitness: 40
+Best fintess 22
+AVG Fitness: 39
+Best fintess 22
+AVG Fitness: 39
+Best fintess 14
+AVG Fitness: 38
+Best fintess 14
+AVG Fitness: 37
+Best fintess 7
+AVG Fitness: 36
+Best fintess 7
+AVG Fitness: 36
+Best fintess 7
+AVG Fitness: 35
+Best fintess 7
+AVG Fitness: 35
+Best fintess 7
+AVG Fitness: 34
+Best fintess 7
+AVG Fitness: 33
+Best fintess 7
+AVG Fitness: 33
+Best fintess 7
+AVG Fitness: 32
+Best fintess 7
+AVG Fitness: 31
+Best fintess 7
+AVG Fitness: 31
+Best fintess 7
+AVG Fitness: 30
+Best fintess 7
+AVG Fitness: 30
+Best fintess 7
+AVG Fitness: 29
+Best fintess 7
+AVG Fitness: 29
+Best fintess 7
+AVG Fitness: 29
+Solution found for 18
+------------------------------------
+cputime: 9693674
+vdslcnt: 13447852
+gencnt:385
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 83
+AVG Fitness: 92
+Best fintess 73
+AVG Fitness: 87
+Best fintess 67
+AVG Fitness: 84
+Best fintess 67
+AVG Fitness: 82
+Best fintess 67
+AVG Fitness: 80
+Best fintess 63
+AVG Fitness: 77
+Best fintess 62
+AVG Fitness: 75
+Best fintess 59
+AVG Fitness: 73
+Best fintess 39
+AVG Fitness: 71
+Best fintess 39
+AVG Fitness: 69
+Best fintess 39
+AVG Fitness: 68
+Best fintess 22
+AVG Fitness: 66
+Best fintess 22
+AVG Fitness: 63
+Best fintess 22
+AVG Fitness: 62
+Best fintess 22
+AVG Fitness: 61
+Best fintess 22
+AVG Fitness: 59
+Best fintess 22
+AVG Fitness: 57
+Best fintess 22
+AVG Fitness: 57
+Best fintess 22
+AVG Fitness: 55
+Best fintess 22
+AVG Fitness: 54
+Best fintess 9
+AVG Fitness: 52
+Best fintess 9
+AVG Fitness: 52
+Best fintess 5
+AVG Fitness: 49
+Best fintess 5
+AVG Fitness: 46
+Best fintess 5
+AVG Fitness: 43
+Best fintess 5
+AVG Fitness: 39
+Best fintess 3
+AVG Fitness: 35
+Best fintess 1
+AVG Fitness: 31
+Solution found for 17
+------------------------------------
+cputime: 7193998
+vdslcnt: 9847652
+gencnt:284
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 114
+AVG Fitness: 128
+Best fintess 103
+AVG Fitness: 121
+Best fintess 96
+AVG Fitness: 117
+Best fintess 93
+AVG Fitness: 113
+Best fintess 76
+AVG Fitness: 111
+Best fintess 76
+AVG Fitness: 108
+Best fintess 76
+AVG Fitness: 106
+Best fintess 75
+AVG Fitness: 103
+Best fintess 75
+AVG Fitness: 100
+Best fintess 66
+AVG Fitness: 97
+Best fintess 66
+AVG Fitness: 96
+Best fintess 64
+AVG Fitness: 93
+Best fintess 26
+AVG Fitness: 89
+Best fintess 26
+AVG Fitness: 81
+Best fintess 11
+AVG Fitness: 72
+Best fintess 9
+AVG Fitness: 62
+Best fintess 1
+AVG Fitness: 46
+Best fintess 1
+AVG Fitness: 25
+Solution found for 16
+------------------------------------
+cputime: 4732990
+vdslcnt: 6393128
+gencnt:186
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 154
+AVG Fitness: 173
+Best fintess 145
+AVG Fitness: 166
+Best fintess 126
+AVG Fitness: 158
+Best fintess 123
+AVG Fitness: 153
+Best fintess 119
+AVG Fitness: 148
+Best fintess 107
+AVG Fitness: 142
+Best fintess 19
+AVG Fitness: 133
+Best fintess 12
+AVG Fitness: 117
+Best fintess 12
+AVG Fitness: 80
+Solution found for 15
+------------------------------------
+cputime: 2329244
+vdslcnt: 3323221
+gencnt:96
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 51
+AVG Fitness: 62
+Best fintess 45
+AVG Fitness: 59
+Best fintess 43
+AVG Fitness: 56
+Best fintess 43
+AVG Fitness: 54
+Best fintess 42
+AVG Fitness: 52
+Best fintess 41
+AVG Fitness: 51
+Best fintess 37
+AVG Fitness: 49
+Best fintess 35
+AVG Fitness: 48
+Best fintess 35
+AVG Fitness: 46
+Best fintess 27
+AVG Fitness: 45
+Best fintess 27
+AVG Fitness: 44
+Best fintess 27
+AVG Fitness: 43
+Best fintess 20
+AVG Fitness: 42
+Best fintess 20
+AVG Fitness: 41
+Best fintess 15
+AVG Fitness: 40
+Best fintess 15
+AVG Fitness: 39
+Best fintess 15
+AVG Fitness: 38
+Best fintess 9
+AVG Fitness: 37
+Best fintess 9
+AVG Fitness: 36
+Best fintess 9
+AVG Fitness: 35
+Best fintess 9
+AVG Fitness: 35
+Best fintess 9
+AVG Fitness: 34
+Best fintess 9
+AVG Fitness: 33
+Best fintess 9
+AVG Fitness: 33
+Best fintess 9
+AVG Fitness: 32
+Best fintess 9
+AVG Fitness: 31
+Best fintess 9
+AVG Fitness: 30
+Best fintess 7
+AVG Fitness: 30
+Best fintess 6
+AVG Fitness: 29
+Best fintess 6
+AVG Fitness: 28
+Best fintess 6
+AVG Fitness: 27
+Best fintess 6
+AVG Fitness: 26
+Best fintess 6
+AVG Fitness: 25
+Best fintess 6
+AVG Fitness: 25
+Best fintess 6
+AVG Fitness: 24
+Best fintess 6
+AVG Fitness: 23
+Best fintess 6
+AVG Fitness: 22
+Best fintess 3
+AVG Fitness: 20
+Solution found for 18
+------------------------------------
+cputime: 9970758
+vdslcnt: 13432456
+gencnt:386
+------------------------------------
+Init of CALC Fitness Correlation Coefficient done..
+Best fintess 79
+AVG Fitness: 92
+Best fintess 67
+AVG Fitness: 86
+Best fintess 67
+AVG Fitness: 83
+Best fintess 52
+AVG Fitness: 80
+Best fintess 52
+AVG Fitness: 78
+Best fintess 52
+AVG Fitness: 77
+Best fintess 52
+AVG Fitness: 75
+Best fintess 52
+AVG Fitness: 73
+Best fintess 44
+AVG Fitness: 71
+Best fintess 44
+AVG Fitness: 70
+
