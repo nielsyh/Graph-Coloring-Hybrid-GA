@@ -16,7 +16,7 @@ namespace EC_Practicum_2
 
             for (var i = 0; i < 5; i++)
             {
-                var k = 18;
+                var k = 21;
 
                 while (true)
                 {
