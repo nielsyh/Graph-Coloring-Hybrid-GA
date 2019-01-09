@@ -1,2 +1,2 @@
-output_data/
-transform-scrpt/
+output_data/*
+transform-scrpt/*
